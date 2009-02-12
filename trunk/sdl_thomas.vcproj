@@ -269,22 +269,6 @@
 				RelativePath=".\src\tinyXML\tinyxmlparser.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\src\tinyXML\utf8test.xml"
-				>
-			</File>
-			<File
-				RelativePath=".\src\tinyXML\xmltest.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>
