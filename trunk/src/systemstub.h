@@ -2,6 +2,8 @@
 #define __SYSTEMSTUB_H__
 
 #include "intern.h"
+#include <string>
+using namespace std;
 
 struct PlayerInput {
 	enum {
@@ -19,10 +21,7 @@ struct PlayerInput {
 	bool space;
 	char lastChar;
 	bool quit;
-};
-
-struct SystemException {
-  SystemException(const char* msg) {}
+  bool escape;
 };
 
 struct SystemStub {
@@ -38,8 +37,10 @@ struct SystemStub {
   virtual void updateScreen() = 0;
   virtual uint32 getTimeStamp() = 0;
 
-  virtual void draw(uint8 resId, int16 x, int16 y) = 0;
+  virtual uint8 readSurface(string filename, uint32 bgColor)=0;;
 
+  virtual void drawImage(uint8 surfId, int16 x, int16 y) = 0;
+  virtual void drawImage(uint8 surfId, Rect* srcImg, Point* dstRect) = 0;
 };
 
 extern SystemStub *SystemStub_SDL_create();

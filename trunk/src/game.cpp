@@ -20,13 +20,15 @@
 #include "systemstub.h"
 #include "game.h"
 
-
-Game::Game(SystemStub* stub)
-	: _stub(stub), _peon(_stub) {
+Game::Game(SystemStub* stub, string datadir)
+	: _stub(stub), _peon(stub), _res(stub, datadir) {
+    
 }
 
 void Game::run() {
 	_stub->init("Test", GAMESCREEN_W, GAMESCREEN_H);
+  _res.loadAll();
+  _peon.init(&_res);
 	mainLoop();
 	_stub->destroy();
 }
@@ -35,11 +37,10 @@ void Game::run() {
 void Game::mainLoop() {
 	while (!_stub->_pi.quit) {
   	_stub->processEvents();
-
     _peon.update();
-
     _peon.draw();
-    
+    if(_stub->_pi.escape)
+      break;
 		updateTiming();
     _stub->updateScreen();
 	}

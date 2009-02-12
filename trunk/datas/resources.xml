@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <tilesheets>
+    <tilesheet id="tilesW3" filename="tiles.png" bg="265C5B">
+      <tileanimation id="peon">
+        <frameset id="up">
+          <frame x="153" y="145" w="16" h="24"/>
+          <frame x="177" y="145" w="16" h="24"/>
+          <frame x="201" y="145" w="16" h="24"/>
+        </frameset>
+        <frameset id="right">
+          <frame x="153" y="177" w="16" h="24"/>
+          <frame x="177" y="177" w="16" h="24"/>
+          <frame x="201" y="177" w="16" h="24"/>
+        </frameset>
+        <frameset id="down">
+          <frame x="153" y="209" w="16" h="24"/>
+          <frame x="177" y="209" w="16" h="24"/>
+          <frame x="201" y="209" w="16" h="24"/>
+        </frameset>
+        <frameset id="left">
+          <frame x="153" y="241" w="16" h="24"/>
+          <frame x="177" y="241" w="16" h="24"/>
+          <frame x="201" y="241" w="16" h="24"/>
+        </frameset>
+      </tileanimation>
+
+      <tileanimation id="orc">
+        <frameset id="up">
+          <frame x="76"  y="143" w="24" h="32"/>
+          <frame x="100" y="143" w="24" h="32"/>
+          <frame x="124" y="143" w="24" h="32"/>
+        </frameset>
+        <frameset id="right">
+          <frame x="76"  y="174" w="24" h="32"/>
+          <frame x="100" y="174" w="24" h="32"/>
+          <frame x="124" y="174" w="24" h="32"/>
+        </frameset>
+        <frameset id="down">
+          <frame x="76"  y="206" w="24" h="32"/>
+          <frame x="100" y="206" w="24" h="32"/>
+          <frame x="124" y="206" w="24" h="32"/>
+        </frameset>
+        <frameset id="left">
+          <frame x="76"  y="238" w="24" h="32"/>
+          <frame x="100" y="238" w="24" h="32"/>
+          <frame x="124" y="238" w="24" h="32"/>
+        </frameset>
+      </tileanimation>
+    
+    </tilesheet>
+  </tilesheets>
+</resources>

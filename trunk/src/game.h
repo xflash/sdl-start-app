@@ -3,9 +3,11 @@
 
 #include "intern.h"
 #include "peon.h"
+#include "resources.h"
+#include <string>
+using namespace std;
 
 struct SystemStub;
-
 
 struct Game {
   enum {
@@ -15,8 +17,9 @@ struct Game {
 
   SystemStub *_stub;
   Peon _peon;
+  Resources _res;
 
-	Game(SystemStub *);
+	Game(SystemStub * stub, string datadir);
 
 	void run();
 	void mainLoop();
