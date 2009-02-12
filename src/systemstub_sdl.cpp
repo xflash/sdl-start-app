@@ -9,13 +9,12 @@ using namespace std;
 
 struct SystemStub_SDL : SystemStub {
   enum {
-    SCREEN_BPP = 32,
+    SCREEN_BPP = 24,
   };
 	SDL_Surface* _screen;
-	SDL_Surface** _resources;
+	map<uint8, SDL_Surface*> _surfaces;
+  uint8 _surfaceCount;
 	uint16 _screenW, _screenH;
-
-  SDL_Surface* loadImage(string filename);
 
 	virtual ~SystemStub_SDL() {}
 	virtual void init(const char *title, uint16 w, uint16 h);
@@ -24,7 +23,10 @@ struct SystemStub_SDL : SystemStub {
 	virtual void sleep(uint32 duration);
   virtual void updateScreen();
   virtual uint32 getTimeStamp();
-  virtual void draw(uint8 resId, int16 x, int16 y);
+  virtual void drawImage(uint8 resId, int16 x, int16 y);
+  virtual void drawImage(uint8 resId, Rect* srcImg, Point* dstRect);
+  virtual uint8 readSurface(string filename, uint32 bgColor);
+
 };
 
 SystemStub *SystemStub_SDL_create() {
@@ -42,35 +44,11 @@ void SystemStub_SDL::init(const char *title, uint16 w, uint16 h) {
 	if (!_screen)
 		throw new SystemException("SystemStub_SDL Unable to allocate _screen buffer");
 	
-	const SDL_PixelFormat *pf = _screen->format;
-
-  _resources = (SDL_Surface**)malloc(sizeof(SDL_Surface*)*Resources::MAX_ID);
-  cout << "Loading Images ("<<Resources::MAX_ID<<")" << endl;
-  for(int i=0; i<Resources::MAX_ID; i++) {
-    ostringstream ostr;
-    ostr << "datas/" << i << ".png";
-    _resources[i]=loadImage(ostr.str());
-    if(_resources[i]==NULL) 
-      throw new SystemException("Unable to read resources");
-  }
+  _surfaceCount=0;
 }
-
-SDL_Surface* SystemStub_SDL::loadImage(string filename) {
-  cout << "\t<" << filename << "> - " ;
-  SDL_Surface* loadedImage=IMG_Load(filename.c_str());
-  if(loadedImage!=NULL) { 
-    SDL_Surface* optimized=SDL_DisplayFormat(loadedImage);
-    SDL_SetColorKey(optimized, SDL_RLEACCEL | SDL_SRCCOLORKEY, SDL_MapRGB(optimized->format, 0xFF, 0x00, 0xFF));
-    cout << "OK : size (" << loadedImage->w << "x" << loadedImage->h << ")" << endl;
-    SDL_FreeSurface(loadedImage);
-    return optimized;
-  }
-  cout << "NOK" << endl;
-  return NULL;
-}
-
 void SystemStub_SDL::destroy() {
-	if (_resources) {
+/*
+if (_resources) {
     for(int i=0; i<Resources::MAX_ID; i++) {
   		SDL_FreeSurface(_resources[i]);
     }
@@ -78,7 +56,8 @@ void SystemStub_SDL::destroy() {
     delete[] _resources;
 		_resources = 0;
 	}
-	if (_screen) {
+*/
+  if (_screen) {
 		// freed by SDL_Quit()
 		_screen = 0;
 	}
@@ -87,8 +66,7 @@ void SystemStub_SDL::destroy() {
 
 void SystemStub_SDL::updateScreen() {
   SDL_Flip(_screen);
-  SDL_FillRect(_screen, &_screen->clip_rect, SDL_MapRGB(_screen->format, 0x00, 0x00, 0x00) ); 
-  //SDL_UpdateRect(_screen, 0,0, _screenW, _screenH);
+  SDL_FillRect(_screen, &_screen->clip_rect, SDL_MapRGB(_screen->format, 0xF0, 0xf0, 0xf0) ); 
 }
 
 void SystemStub_SDL::processEvents() {
@@ -118,6 +96,9 @@ void SystemStub_SDL::processEvents() {
       case SDLK_TAB:
         _pi.dbgMask &= ~PlayerInput::DF_FASTMODE;
         break;
+			case SDLK_ESCAPE:
+				_pi.escape = false;
+				break;
 			default:
 				break;
 			}
@@ -143,6 +124,9 @@ void SystemStub_SDL::processEvents() {
 			case SDLK_SPACE:
 				_pi.space = true;
 				break;
+			case SDLK_ESCAPE:
+				_pi.escape = true;
+				break;
 			default:
 				break;
 			}
@@ -162,14 +146,41 @@ uint32 SystemStub_SDL::getTimeStamp() {
 	return SDL_GetTicks();
 }
 
-void SystemStub_SDL::draw(uint8 resId, int16 x, int16 y) {
-  //cout << "Blit "<<resId<<" at ("<<x<<","<<y<<")"<<endl;
-    SDL_Surface* surfToBlit=_resources[resId];
+void SystemStub_SDL::drawImage(uint8 resId, int16 x, int16 y) {
+  Point p; p.x=x; p.y=y;
+  drawImage(resId, NULL, &p);
+}
+
+void SystemStub_SDL::drawImage(uint8 resId, Rect* srcImg, Point* dstRect) {
+  SDL_Surface* surfToBlit=_surfaces[resId];
     SDL_Rect blitSrc;
-    blitSrc.x=0; blitSrc.y=0;
-    blitSrc.w=surfToBlit->w; blitSrc.h=surfToBlit->h;
     SDL_Rect blitDst;
-    blitDst.x=x; blitDst.y=y;
-    blitDst.w=surfToBlit->w; blitDst.h=surfToBlit->h;
-    SDL_BlitSurface(surfToBlit, &blitSrc, _screen, &blitDst);
+    blitDst.x=dstRect->x; blitDst.y=dstRect->y;
+
+    if(srcImg!=NULL) {
+      blitSrc.x=srcImg->x; blitSrc.y=srcImg->y;
+      blitSrc.w=srcImg->w; blitSrc.h=srcImg->h;
+      blitDst.w=srcImg->w; blitDst.h=srcImg->h;
+      SDL_BlitSurface(surfToBlit, &blitSrc, _screen, &blitDst);
+    } else {
+      SDL_BlitSurface(surfToBlit, NULL, _screen, &blitDst);
+    }
+
+}
+
+uint8 SystemStub_SDL::readSurface(string filename, uint32 bgColor) {
+  cout << "Loading Surface from ("<<filename<<") - ";
+  SDL_Surface* loadedImage=IMG_Load(filename.c_str());
+  if(loadedImage!=NULL) { 
+    SDL_Surface* optimized=SDL_DisplayFormat(loadedImage);
+    SDL_SetColorKey(optimized, SDL_RLEACCEL | SDL_SRCCOLORKEY, SDL_MapRGB(optimized->format, (bgColor>>16)&0x0000FF, (bgColor>>8)&0x00FF, (bgColor)&0xFF));
+    cout << "OK : size (" << loadedImage->w << "x" << loadedImage->h << ")" << endl;
+    SDL_FreeSurface(loadedImage);
+    _surfaces[_surfaceCount]=optimized;
+    uint8 res=_surfaceCount;
+    _surfaceCount++;
+    return res;
+  }
+  cout << "NOK" << endl;
+  throw new SystemException("Unable to read Surface from %s",filename.c_str());
 }
