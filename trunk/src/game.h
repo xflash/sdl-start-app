@@ -23,7 +23,7 @@ struct Game {
 
 	void run();
 	void mainLoop();
-  void updateTiming();
+  uint32 updateTiming();
 
 };
 
