@@ -41,6 +41,7 @@ struct SystemStub {
 
   virtual void drawImage(uint8 surfId, int16 x, int16 y) = 0;
   virtual void drawImage(uint8 surfId, Rect* srcImg, Point* dstRect) = 0;
+  virtual void drawString(Point* loc, string msg) = 0;
 };
 
 extern SystemStub *SystemStub_SDL_create();

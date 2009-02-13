@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include "systemstub.h"
 #include "resources.h"
 #include <sstream>
@@ -12,6 +13,8 @@ struct SystemStub_SDL : SystemStub {
     SCREEN_BPP = 24,
   };
 	SDL_Surface* _screen;
+  TTF_Font* _font;
+  SDL_Surface* _txtSurf;
 	map<uint8, SDL_Surface*> _surfaces;
   uint8 _surfaceCount;
 	uint16 _screenW, _screenH;
@@ -26,7 +29,7 @@ struct SystemStub_SDL : SystemStub {
   virtual void drawImage(uint8 resId, int16 x, int16 y);
   virtual void drawImage(uint8 resId, Rect* srcImg, Point* dstRect);
   virtual uint8 readSurface(string filename, uint32 bgColor);
-
+  virtual void drawString(Point* loc, string msg);
 };
 
 SystemStub *SystemStub_SDL_create() {
@@ -43,8 +46,12 @@ void SystemStub_SDL::init(const char *title, uint16 w, uint16 h) {
   _screen = SDL_SetVideoMode(w, h, SCREEN_BPP, SDL_HWSURFACE | SDL_DOUBLEBUF);
 	if (!_screen)
 		throw new SystemException("SystemStub_SDL Unable to allocate _screen buffer");
-	
   _surfaceCount=0;
+
+  TTF_Init();
+  _font = TTF_OpenFont("datas/arial.ttf", 12);
+  _txtSurf = NULL;
+
 }
 void SystemStub_SDL::destroy() {
 /*
@@ -61,6 +68,8 @@ if (_resources) {
 		// freed by SDL_Quit()
 		_screen = 0;
 	}
+  TTF_CloseFont(_font);
+  TTF_Quit();
 	SDL_Quit();
 }
 
@@ -184,3 +193,15 @@ uint8 SystemStub_SDL::readSurface(string filename, uint32 bgColor) {
   cout << "NOK" << endl;
   throw new SystemException("Unable to read Surface from %s",filename.c_str());
 }
+
+void SystemStub_SDL::drawString(Point* loc, string msg) {
+  if(_txtSurf!=NULL)
+    SDL_FreeSurface(_txtSurf);
+  SDL_Color col = {0,0,0};
+  _txtSurf = TTF_RenderText_Blended(_font, msg.c_str(), col);
+
+  SDL_Rect blitDst;
+  blitDst.x=loc->x; blitDst.y=loc->y;
+  SDL_BlitSurface(_txtSurf, NULL, _screen, &blitDst);
+}
+
