@@ -6,9 +6,10 @@
 #include <string>
 using namespace std;
 
-struct SystemStub;
+class SystemStub;
 
-struct Resources {
+class Resources {
+public:
   SystemStub* _stub;
   map<string, TileSheet*> _tileSheets;
   string _datadir;

@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SDL.lib SDLmain.lib SDL_image.lib SDL_TTF.lib"
+				AdditionalDependencies="SDL.lib SDLmain.lib SDL_image.lib SDL_TTF.lib SDL_gfx.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
@@ -178,7 +178,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\blittable.cpp"
+				RelativePath=".\src\bullet.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Character.cpp"
 				>
 			</File>
 			<File
@@ -191,10 +195,6 @@
 			</File>
 			<File
 				RelativePath=".\src\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\peon.cpp"
 				>
 			</File>
 			<File
@@ -212,11 +212,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\src\actor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\actorpool.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\animated.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\blittable.h"
+				RelativePath=".\src\bullet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Character.h"
 				>
 			</File>
 			<File
@@ -229,10 +241,6 @@
 			</File>
 			<File
 				RelativePath=".\src\intern.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\peon.h"
 				>
 			</File>
 			<File

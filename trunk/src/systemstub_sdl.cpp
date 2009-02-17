@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_gfxPrimitives.h>
 #include "systemstub.h"
 #include "resources.h"
 #include <sstream>
@@ -8,7 +9,8 @@
 #include <string>
 using namespace std;
 
-struct SystemStub_SDL : SystemStub {
+class SystemStub_SDL : public SystemStub {
+public:
   enum {
     SCREEN_BPP = 24,
   };
@@ -30,6 +32,8 @@ struct SystemStub_SDL : SystemStub {
   virtual void drawImage(uint8 resId, Rect* srcImg, Point* dstRect);
   virtual uint8 readSurface(string filename, uint32 bgColor);
   virtual void drawString(Point* loc, string msg);
+  virtual void drawPixel(Point* loc);
+  virtual void drawLine(Point* start, Point* end);
 };
 
 SystemStub *SystemStub_SDL_create() {
@@ -46,6 +50,7 @@ void SystemStub_SDL::init(const char *title, uint16 w, uint16 h) {
   _screen = SDL_SetVideoMode(w, h, SCREEN_BPP, SDL_HWSURFACE | SDL_DOUBLEBUF);
 	if (!_screen)
 		throw new SystemException("SystemStub_SDL Unable to allocate _screen buffer");
+
   _surfaceCount=0;
 
   TTF_Init();
@@ -85,33 +90,16 @@ void SystemStub_SDL::processEvents() {
 		case SDL_QUIT:
 			_pi.quit = true;
 			break;
-		case SDL_KEYUP:
-			switch (ev.key.keysym.sym) {
-			case SDLK_LEFT:
-				_pi.dirMask &= ~PlayerInput::DIR_LEFT;
-				break;
-			case SDLK_RIGHT:
-				_pi.dirMask &= ~PlayerInput::DIR_RIGHT;
-				break;
-			case SDLK_UP:
-				_pi.dirMask &= ~PlayerInput::DIR_UP;
-				break;
-			case SDLK_DOWN:
-				_pi.dirMask &= ~PlayerInput::DIR_DOWN;
-				break;
-			case SDLK_SPACE:
-				_pi.space = false;
-				break;
-      case SDLK_TAB:
-        _pi.dbgMask &= ~PlayerInput::DF_FASTMODE;
-        break;
-			case SDLK_ESCAPE:
-				_pi.escape = false;
-				break;
-			default:
-				break;
-			}
-			break;
+    case SDL_MOUSEMOTION:
+      _pi.mouseX = ev.motion.x;
+      _pi.mouseY = ev.motion.y;
+      break;
+    case SDL_MOUSEBUTTONDOWN:
+      _pi.click = true;
+      break;
+    case SDL_MOUSEBUTTONUP:
+      _pi.click = false;
+      break;
 		case SDL_KEYDOWN:
 			_pi.lastChar = ev.key.keysym.sym;
 			switch (ev.key.keysym.sym) {
@@ -140,12 +128,38 @@ void SystemStub_SDL::processEvents() {
 				break;
 			}
 			break;
+    case SDL_KEYUP:
+			switch (ev.key.keysym.sym) {
+			case SDLK_LEFT:
+				_pi.dirMask &= ~PlayerInput::DIR_LEFT;
+				break;
+			case SDLK_RIGHT:
+				_pi.dirMask &= ~PlayerInput::DIR_RIGHT;
+				break;
+			case SDLK_UP:
+				_pi.dirMask &= ~PlayerInput::DIR_UP;
+				break;
+			case SDLK_DOWN:
+				_pi.dirMask &= ~PlayerInput::DIR_DOWN;
+				break;
+			case SDLK_SPACE:
+				_pi.space = false;
+				break;
+      case SDLK_TAB:
+        _pi.dbgMask &= ~PlayerInput::DF_FASTMODE;
+        break;
+			case SDLK_ESCAPE:
+				_pi.escape = false;
+				break;
+			default:
+				break;
+			}
+			break;
 		default:
 			break;
 		}
 	}
 }
-
 
 void SystemStub_SDL::sleep(uint32 duration) {
 	SDL_Delay(duration);
@@ -162,18 +176,19 @@ void SystemStub_SDL::drawImage(uint8 resId, int16 x, int16 y) {
 
 void SystemStub_SDL::drawImage(uint8 resId, Rect* srcImg, Point* dstRect) {
   SDL_Surface* surfToBlit=_surfaces[resId];
-    SDL_Rect blitSrc;
-    SDL_Rect blitDst;
-    blitDst.x=dstRect->x; blitDst.y=dstRect->y;
+  SDL_Rect blitSrc;
+  SDL_Rect blitDst;
+  blitDst.x=dstRect->x; blitDst.y=dstRect->y;
 
-    if(srcImg!=NULL) {
-      blitSrc.x=srcImg->x; blitSrc.y=srcImg->y;
-      blitSrc.w=srcImg->w; blitSrc.h=srcImg->h;
-      blitDst.w=srcImg->w; blitDst.h=srcImg->h;
-      SDL_BlitSurface(surfToBlit, &blitSrc, _screen, &blitDst);
-    } else {
-      SDL_BlitSurface(surfToBlit, NULL, _screen, &blitDst);
-    }
+  if(srcImg!=NULL) {
+    blitDst.x=dstRect->x - srcImg->w/2; blitDst.y=dstRect->y - srcImg->h/2;
+    blitSrc.x=srcImg->x; blitSrc.y=srcImg->y;
+    blitSrc.w=srcImg->w; blitSrc.h=srcImg->h;
+    blitDst.w=srcImg->w; blitDst.h=srcImg->h;
+    SDL_BlitSurface(surfToBlit, &blitSrc, _screen, &blitDst);
+  } else {
+    SDL_BlitSurface(surfToBlit, NULL, _screen, &blitDst);
+  }
 
 }
 
@@ -197,11 +212,20 @@ uint8 SystemStub_SDL::readSurface(string filename, uint32 bgColor) {
 void SystemStub_SDL::drawString(Point* loc, string msg) {
   if(_txtSurf!=NULL)
     SDL_FreeSurface(_txtSurf);
-  SDL_Color col = {0,0,0};
-  _txtSurf = TTF_RenderText_Blended(_font, msg.c_str(), col);
+  SDL_Color bg = {0,0,0};
+  SDL_Color fg = {0x1f,0x2f,0x3f};
+  _txtSurf = TTF_RenderText_Blended(_font, msg.c_str(), fg);
 
   SDL_Rect blitDst;
   blitDst.x=loc->x; blitDst.y=loc->y;
   SDL_BlitSurface(_txtSurf, NULL, _screen, &blitDst);
 }
 
+
+void SystemStub_SDL::drawPixel(Point* loc) {
+  pixelColor(_screen, loc->x, loc->y, 0);
+}
+
+void SystemStub_SDL::drawLine(Point* start, Point* end) {
+  lineColor(_screen, start->x, start->y, end->x, end->y, 0x0F0F0FFF);
+}

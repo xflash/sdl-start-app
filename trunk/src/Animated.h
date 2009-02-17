@@ -3,8 +3,8 @@
 
 #include "intern.h"
 
-struct Animated {
-  
+class Animated {
+public:
   Animated();
 
   FrameSet* _currentFrameSet;
