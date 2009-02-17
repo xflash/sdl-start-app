@@ -10,7 +10,9 @@ struct PlayerInput {
 		DIR_UP    = 1 << 0,
 		DIR_DOWN  = 1 << 1,
 		DIR_LEFT  = 1 << 2,
-		DIR_RIGHT = 1 << 3
+		DIR_RIGHT = 1 << 3,
+
+    DIR_NONE  = 0
 	};
   enum {
     DF_FASTMODE  = 1 << 0,
@@ -18,14 +20,18 @@ struct PlayerInput {
 
 	uint8 dirMask;
   uint8 dbgMask;
+  int16 mouseX;
+  int16 mouseY;
+  bool click;
 	bool space;
 	char lastChar;
 	bool quit;
   bool escape;
 };
 
-struct SystemStub {
-	PlayerInput _pi;
+class SystemStub {
+public:
+  PlayerInput _pi;
 
 	virtual ~SystemStub() {}
 
@@ -42,6 +48,8 @@ struct SystemStub {
   virtual void drawImage(uint8 surfId, int16 x, int16 y) = 0;
   virtual void drawImage(uint8 surfId, Rect* srcImg, Point* dstRect) = 0;
   virtual void drawString(Point* loc, string msg) = 0;
+  virtual void drawPixel(Point* loc) = 0;
+  virtual void drawLine(Point* start, Point* end) = 0;
 };
 
 extern SystemStub *SystemStub_SDL_create();

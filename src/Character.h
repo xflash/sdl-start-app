@@ -1,14 +1,14 @@
-#ifndef __PEON_H__
-#define __PEON_H__
+#ifndef __CHARACTER_H__
+#define __CHARACTER_H__
 
 #include "intern.h"
 #include "animated.h"
-#include "blittable.h"
 
-struct SystemStub;
-struct Resources;
+class SystemStub;
+class Resources;
 
-struct Peon: Animated, Blittable {
+class Character: public Animated {
+public:
   enum {
     ACC_X=  5,
     ACC_Y=  3,
@@ -23,13 +23,17 @@ struct Peon: Animated, Blittable {
   Point _loc;
   int16 _xd;
   int16 _yd;
+  Rect  _blitter;
+  uint8 _surfId;
+  string _tilename;
 
-  Peon(SystemStub* stub);
+  Character(SystemStub* stub, string tilename);
   
   void init(Resources* res);
   void update();
+  void updateInput();
   void draw();
 
 };
 
-#endif // __PEON_H__
+#endif // __CHARACTER_H__

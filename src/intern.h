@@ -18,7 +18,7 @@ using namespace std;
 #define ARRAYSIZE(a) (sizeof(a)/sizeof(a[0]))
 
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#define M_PI 3.14159265358979323846f
 #endif
 
 struct Point {
@@ -32,6 +32,13 @@ struct Rect {
   int16 w;
   int16 h;
 };
+
+static Point getCenter(Rect* rect) {
+  Point pt;
+  pt.x=rect->x+rect->w/2;
+  pt.y=rect->y+rect->h/2;
+  return pt;
+}
 
 struct Frame{
   Rect loc;

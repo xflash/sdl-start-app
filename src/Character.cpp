@@ -1,4 +1,4 @@
-#include "peon.h"
+#include "Character.h"
 #include "game.h"
 #include "systemstub.h"
 #include "resources.h"
@@ -6,17 +6,18 @@
 using namespace std;
 
 
-Peon::Peon(SystemStub* stub): Blittable(stub),  _stub(stub){
+Character::Character(SystemStub* stub, string tilename): 
+  _tilename(tilename), _stub(stub){
   _loc.x = Game::GAMESCREEN_W/2;
   _loc.y = Game::GAMESCREEN_H/2;
   _xd = _yd = 0;
 }
 
-void Peon::init(Resources* res) {
+void Character::init(Resources* res) {
   TileSheet* tileSheet = res->_tileSheets["tilesW3"];
   _surfId = tileSheet->surfId;
 
-  TileAnimation* peonTile=tileSheet->tileAnimations["orc"];
+  TileAnimation* peonTile=tileSheet->tileAnimations[_tilename];
   _upSet = peonTile->framesets["up"];
   _downSet = peonTile->framesets["down"];
   _leftSet = peonTile->framesets["left"];
@@ -26,8 +27,7 @@ void Peon::init(Resources* res) {
   _currentFrameSet=_defaultFrameSet;
 }
 
-
-void Peon::update() {
+void Character::updateInput() {
   if(_stub->_pi.dirMask & PlayerInput::DIR_LEFT)        { _xd=-ACC_X; _currentFrameSet=_leftSet;  _animated=true;}
   else if(_stub->_pi.dirMask & PlayerInput::DIR_RIGHT)  { _xd=ACC_X;  _currentFrameSet=_rightSet; _animated=true;}
   else                                                  { _xd=0;      }
@@ -37,6 +37,9 @@ void Peon::update() {
   else                                                  { _yd=0;       }
 
   if(_xd==0 && _yd==0)  _animated=false;
+}
+
+void Character::update() {
 
   Animated::update();
 
@@ -44,6 +47,13 @@ void Peon::update() {
   _loc.y+=_yd;
 }
 
-void Peon::draw() {
-  Blittable::draw(_currentFrameSet->frames[_frame], &_loc);
+
+void Character::draw() {
+  Frame* fr = _currentFrameSet->frames[_frame];
+  _blitter.x=fr->loc.x;
+  _blitter.y=fr->loc.y;
+  _blitter.w=fr->loc.w;
+  _blitter.h=fr->loc.h;
+
+  _stub->drawImage(_surfId, &_blitter, &_loc);
 }

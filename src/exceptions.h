@@ -5,7 +5,8 @@
 #include <string>
 using namespace std;
 
-struct SystemException {
+class SystemException {
+public:
   string _msg;
   SystemException(string msg, ...);
 };
