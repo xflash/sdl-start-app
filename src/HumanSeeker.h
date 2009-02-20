@@ -6,6 +6,8 @@
 
 class SystemStub;
 class Character;
+class TiXmlElement;
+class Game;
 
 class HumanSeeker : public CharacterUpdater {
 private:
@@ -15,7 +17,7 @@ private:
   Character* _target;
   int _dist;
 public:
-  HumanSeeker(SystemStub* systemstub, int16 sightRadius, int16 fightRadius, Character* target);
+  HumanSeeker(Game* game, TiXmlElement* element);
   
   void update(Character* character);
   void dbgDraw(Character* character);

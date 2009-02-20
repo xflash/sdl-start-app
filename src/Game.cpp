@@ -1,45 +1,32 @@
 #include <ctime>
 #include "systemstub.h"
-#include "game.h"
+#include "Game.h"
 #include "Character.h"
 #include "HumanPlayer.h"
 #include "HumanSeeker.h"
 #include "bullet.h"
-#include "Maps.h"
 #include <sstream>
 #include <iostream>
 #include "tinyXML/TinyXML.h"
 
+#define DEFAULT_RESOURCES_XML_FILENAME "resources.xml"
+#define DEFAULT_GAME_XML_FILENAME "game.xml"
+#define DEFAULT_MAPS_XML_FILENAME "maps.xml"
 
 Game::Game(SystemStub* stub, string datadir)
-	: _stub(stub), _res(stub, datadir),_datadir(datadir) {
-}
-
-Character* Game::createCharacterFromXmlElement(TiXmlElement* character, CharacterUpdater* updater) {
-  const char* id = character->Attribute("id");
-  const char* tilepath = character->Attribute("tilepath");
-  const char* dbg = character->Attribute("dbg");
-  Character* c = new Character(_stub, updater);
-  if(dbg!=NULL)
-    c->_dbg=_stricmp("true", dbg)==0;
-  c->init(&_res, tilepath);
-  c->_loc.x=atoi(character->Attribute("x"));
-  c->_loc.y=atoi(character->Attribute("y"));
-  _characters[id]=c;
-
-  return c;
+	: _stub(stub), _res(stub), _datadir(datadir) {
 }
 
 void Game::init() {
 	_stub->init("Test", GAMESCREEN_W, GAMESCREEN_H);
-  _res.loadAll();
 
-  _maps = new Maps();
+  _res.loadAll(_datadir, DEFAULT_RESOURCES_XML_FILENAME);
+
+  _maps.loadAll(_datadir, DEFAULT_MAPS_XML_FILENAME);
 
   ostringstream ostr;
-  ostr << _datadir << "/" << "game.xml";
+  ostr << _datadir << "/" << DEFAULT_GAME_XML_FILENAME;
   cout << "Loading Game from ("<<ostr.str()<<")" << endl;
-
   string filename = ostr.str();
   TiXmlDocument doc(filename.c_str());
   if (!doc.LoadFile())
@@ -50,23 +37,19 @@ void Game::init() {
 
   _bullets = new BulletPool(this, root->FirstChildElement("bullets"));
 
-  HumanPlayer* hp=new HumanPlayer(&_stub->_pi, _bullets);
-
   TiXmlNode* player=root->FirstChild("player");
+  HumanPlayer* hp=new HumanPlayer(&_stub->_pi, _bullets);
   TiXmlElement* playerCharacter = player->FirstChildElement("character");
-  createCharacterFromXmlElement(playerCharacter, hp);
+  _characters[playerCharacter->Attribute("id")]=new Character(this, hp, playerCharacter);
 
   TiXmlNode* characters=root->FirstChild("characters");
   for(TiXmlElement* character=characters->FirstChildElement();character;character=character->NextSiblingElement()) {
     TiXmlElement* updater=character->FirstChildElement("humanSeeker");
-    HumanSeeker* hs = NULL;
+    CharacterUpdater* hs = NULL;
     if(updater!=NULL) {
-      uint16 sightradius = atoi(updater->Attribute("sightradius"));
-      uint16 fightradius = atoi(updater->Attribute("fightradius"));
-      Character* target = _characters.find(updater->Attribute("target"))->second;
-      hs = new HumanSeeker(_stub, sightradius, fightradius, target);
+      hs = new HumanSeeker(this, updater);
     }
-    createCharacterFromXmlElement(character, hs);
+    _characters[character->Attribute("id")]=new Character(this, hs, character);
   }
 }
 
@@ -102,9 +85,6 @@ void Game::move() {
 
 void Game::draw() {
   static Point locMsg;
-  static Point locMouse;
-  locMouse.x = _stub->_pi.mouseX;
-  locMouse.y = _stub->_pi.mouseY;
 
   //_peon.draw();
   //_stub->drawLine(&_peon._loc, &locMouse);
@@ -127,7 +107,7 @@ void Game::draw() {
   _stub->drawString(&locMsg, "Bullets: %d/%d",_bullets->getNum(), _bullets->getNumMax());
   locMsg.y+=msgRowSize;
 
-  _stub->drawString(&locMsg, "Mouse: (%d,%d) %s", _stub->_pi.mouseX, _stub->_pi.mouseY, (_stub->_pi.click)?"Click":"");
+  _stub->drawString(&locMsg, "Mouse: (%d,%d) %s", _stub->_pi.mouse.x, _stub->_pi.mouse.y, (_stub->_pi.click)?"Click":"");
   locMsg.y+=msgRowSize;
 }
 

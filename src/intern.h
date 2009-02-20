@@ -59,6 +59,12 @@ static uint getDistance(Point* p1, Point* p2) {
   return (uint)sqrt((double)dx*dx + dy*dy);
 }
 
+static float getAngle(Point* p1, Point* p2) {
+  int dY = p2->y - p1->y;
+  int dX = p2->x - p1->x;
+  return atan2((float)dY, (float)dX);
+}
+
 struct Frame{
   Rect loc;
 };

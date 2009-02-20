@@ -186,7 +186,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\game.cpp"
+				RelativePath=".\src\Game.cpp"
 				>
 			</File>
 			<File
@@ -199,6 +199,10 @@
 			</File>
 			<File
 				RelativePath=".\src\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Maps.cpp"
 				>
 			</File>
 			<File
@@ -240,7 +244,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\game.h"
+				RelativePath=".\src\Game.h"
 				>
 			</File>
 			<File
@@ -253,6 +257,10 @@
 			</File>
 			<File
 				RelativePath=".\src\intern.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Maps.h"
 				>
 			</File>
 			<File
@@ -275,6 +283,10 @@
 			>
 			<File
 				RelativePath=".\datas\game.xml"
+				>
+			</File>
+			<File
+				RelativePath=".\datas\maps.xml"
 				>
 			</File>
 			<File

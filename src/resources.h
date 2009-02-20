@@ -9,16 +9,15 @@ using namespace std;
 class SystemStub;
 
 class Resources {
-public:
+private:
   SystemStub* _stub;
   map<string, TileSheet*> _tileSheets;
-  string _datadir;
 
-  Resources (SystemStub* stub, string datadir);
+public:
+  Resources (SystemStub* stub);
+  TileSheet* getTileSheet(string id);
 
-  void loadAll();
-  void readFileContent(string filename, void** readedContent, long* readedSize);
-
+  void loadAll(string datadir, string filename);
   void destroy();
 };
 
