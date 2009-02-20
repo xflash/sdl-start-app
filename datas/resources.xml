@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <tilesheets>
+    <tilesheet id="map" filename="150px-Mchip0.png" bg="FF00FF">
+      <tile x="0" y="0" w="18" h="18"/>
+    </tilesheet>
+    
     <tilesheet id="axe" filename="axe.png" bg="FF00FF">
       <tileanimation id="axe">
         <frameset id="standing">

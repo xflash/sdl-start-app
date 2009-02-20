@@ -52,7 +52,6 @@ void Game::init() {
   _bullets->init(nb, &_res, _stub, this, tilepath);
 
 
-  HumanSeeker* hs = new HumanSeeker(_stub, 70);
   HumanPlayer* hp=new HumanPlayer(&_stub->_pi, _bullets);
 
   TiXmlNode* player=root->FirstChild("player");
@@ -61,9 +60,16 @@ void Game::init() {
 
   TiXmlNode* characters=root->FirstChild("characters");
   for(TiXmlElement* character=characters->FirstChildElement();character;character=character->NextSiblingElement()) {
+    TiXmlElement* updater=character->FirstChildElement("humanSeeker");
+    HumanSeeker* hs = NULL;
+    if(updater!=NULL) {
+      uint16 sightradius = atoi(updater->Attribute("sightradius"));
+      uint16 fightradius = atoi(updater->Attribute("fightradius"));
+      Character* target = _characters.find(updater->Attribute("target"))->second;
+      hs = new HumanSeeker(_stub, sightradius, fightradius, target);
+    }
     createCharacterFromXmlElement(character, hs);
   }
-
 }
 
 void Game::close() {

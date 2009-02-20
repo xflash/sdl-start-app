@@ -83,13 +83,18 @@ void Bullet::explose() {
 }
 
 void Bullet::draw() {
-  _blitter.x=_frameSet->frames[_frame]->loc.x;
-  _blitter.y=_frameSet->frames[_frame]->loc.y;
-  _blitter.w=_frameSet->frames[_frame]->loc.w;
-  _blitter.h=_frameSet->frames[_frame]->loc.h;
+  _frameBlitter.x=_frameSet->frames[_frame]->loc.x;
+  _frameBlitter.y=_frameSet->frames[_frame]->loc.y;
+  _frameBlitter.w=_frameSet->frames[_frame]->loc.w;
+  _frameBlitter.h=_frameSet->frames[_frame]->loc.h;
+  
+  _dstBlitter.x=_loc.x;
+  _dstBlitter.y=_loc.y;
+  _dstBlitter.w=_frameBlitter.w;
+  _dstBlitter.h=_frameBlitter.h;
 
   //_stub->drawRect(&_bbox, 0x0F0F0FFF);
-  _stub->drawImage(_surfId, &_blitter, &_loc);
+  _stub->drawImage(_surfId, &_frameBlitter, &_dstBlitter);
 }
 	
 

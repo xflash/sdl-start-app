@@ -29,37 +29,46 @@ void Resources::loadAll() {
 
 
   TiXmlNode* tileSheets=root->FirstChild("tilesheets");
-  if(tileSheets!=NULL) {
-    for(TiXmlElement* tileSheet=tileSheets->FirstChildElement();tileSheet;tileSheet=tileSheet->NextSiblingElement()) {
-      TileSheet* ts = new TileSheet();
-      ts->id=tileSheet->Attribute("id");
-      cout << "\tParsing TileSheet id: " << ts->id << endl;
-      string tsfilename;
-      tsfilename += _datadir + "/" + tileSheet->Attribute("filename");
-      uint32 bg;
-      sscanf(tileSheet->Attribute("bg"), "%x", &bg);
-      ts->surfId = _stub->readSurface(tsfilename, bg);
-      _tileSheets[ts->id]=ts;
+  for(TiXmlElement* tileSheet=tileSheets->FirstChildElement();tileSheet;tileSheet=tileSheet->NextSiblingElement()) {
+    TileSheet* ts = new TileSheet();
+    ts->id=tileSheet->Attribute("id");
+    cout << "\tParsing TileSheet id: " << ts->id << endl;
+    string tsfilename;
+    tsfilename += _datadir + "/" + tileSheet->Attribute("filename");
+    uint32 bg;
+    sscanf(tileSheet->Attribute("bg"), "%x", &bg);
+    ts->surfId = _stub->readSurface(tsfilename, bg);
+    _tileSheets[ts->id]=ts;
 
-      for(TiXmlElement* tileAnimation=tileSheet->FirstChildElement("tileanimation");tileAnimation;tileAnimation=tileAnimation->NextSiblingElement()) {
-        TileAnimation* ta = new TileAnimation();
-        ta->id=tileAnimation->Attribute("id");
-        ts->tileAnimations[ta->id]=ta;
-        cout << "\t\t\tParsing TileAnimation id: " << ta->id <<endl;
-        for(TiXmlElement* frameset=tileAnimation->FirstChildElement("frameset");frameset;frameset=frameset->NextSiblingElement()) {
-          FrameSet* fs = new FrameSet();
-          fs->id=frameset->Attribute("id");
-          ta->framesets[fs->id]=fs;
-          cout << "\t\t\t\tParsing FrameSet id: " << fs->id <<endl;
-          for(TiXmlElement* frame=frameset->FirstChildElement("frame");frame;frame=frame->NextSiblingElement()) {
-            Frame* f = new Frame();
-            f->loc.x=atoi(frame->Attribute("x"));
-            f->loc.y=atoi(frame->Attribute("y"));
-            f->loc.w=atoi(frame->Attribute("w"));
-            f->loc.h=atoi(frame->Attribute("h"));
-            fs->frames.push_back(f);;
-            cout << "\t\t\t\tParsing Frame ("<<f->loc.x << "," <<f->loc.y << ")"<< endl;
-          }
+    for(TiXmlElement* tile=tileSheet->FirstChildElement("tile");tile;tile=tile->NextSiblingElement()) {
+      //<tile id="water" x="0" y="0" w="18" h="18"/>
+      Frame* f = new Frame();
+      f->loc.x=atoi(tile->Attribute("x"));
+      f->loc.y=atoi(tile->Attribute("y"));
+      f->loc.w=atoi(tile->Attribute("w"));
+      f->loc.h=atoi(tile->Attribute("h"));
+      ts->tiles.push_back(f);
+      cout << "\t\t\tParsing Tile ("<<f->loc.x << "," <<f->loc.y << ") - ("<< f->loc.w<<"x"<<f->loc.h<<")"<< endl;
+    }
+
+    for(TiXmlElement* tileAnimation=tileSheet->FirstChildElement("tileanimation");tileAnimation;tileAnimation=tileAnimation->NextSiblingElement()) {
+      TileAnimation* ta = new TileAnimation();
+      ta->id=tileAnimation->Attribute("id");
+      ts->tileAnimations[ta->id]=ta;
+      cout << "\t\t\tParsing TileAnimation id: " << ta->id <<endl;
+      for(TiXmlElement* frameset=tileAnimation->FirstChildElement("frameset");frameset;frameset=frameset->NextSiblingElement()) {
+        FrameSet* fs = new FrameSet();
+        fs->id=frameset->Attribute("id");
+        ta->framesets[fs->id]=fs;
+        cout << "\t\t\t\tParsing FrameSet id: " << fs->id <<endl;
+        for(TiXmlElement* frame=frameset->FirstChildElement("frame");frame;frame=frame->NextSiblingElement()) {
+          Frame* f = new Frame();
+          f->loc.x=atoi(frame->Attribute("x"));
+          f->loc.y=atoi(frame->Attribute("y"));
+          f->loc.w=atoi(frame->Attribute("w"));
+          f->loc.h=atoi(frame->Attribute("h"));
+          fs->frames.push_back(f);
+          cout << "\t\t\t\tParsing Frame ("<<f->loc.x << "," <<f->loc.y << ") - ("<< f->loc.w<<"x"<<f->loc.h<<")"<< endl;
         }
       }
     }
