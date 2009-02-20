@@ -32,7 +32,15 @@ void Character::init(Resources* res, string tilepath) {
 }
 
 void Character::update() {
-  _updater->update(this);
+  if(_updater!=NULL)
+    _updater->update(this);
+
+  if(_bbox.x>=(Game::GAMESCREEN_W-_bbox.w) || _bbox.x<=0 
+    ||_bbox.y>=(Game::GAMESCREEN_H-_bbox.h) || _bbox.y<=0 ) {
+      stopX();
+      stopY();
+      checkStop();
+  }
 
   if(_animated) {
     _frame++;
@@ -55,16 +63,22 @@ void Character::update() {
 
 void Character::draw() {
   Frame* fr = _frameSet->frames[_frame];
-  _blitter.x=fr->loc.x;
-  _blitter.y=fr->loc.y;
-  _blitter.w=fr->loc.w;
-  _blitter.h=fr->loc.h;
+  _frameBlitter.x=fr->loc.x;
+  _frameBlitter.y=fr->loc.y;
+  _frameBlitter.w=fr->loc.w;
+  _frameBlitter.h=fr->loc.h;
+
+  _dstBlitter.x=_loc.x;
+  _dstBlitter.y=_loc.y;
+  _dstBlitter.w=_frameBlitter.w;
+  _dstBlitter.h=_frameBlitter.h;
 
   if(_dbg) {
     _stub->drawRect(&_bbox, 0xFF00007F);
-    _updater->dbgDraw(this);
+    if(_updater!=NULL)
+      _updater->dbgDraw(this);
   }
-  _stub->drawImage(_surfId, &_blitter, &_loc);
+  _stub->drawImage(_surfId, &_frameBlitter, &_dstBlitter);
 }
 
 

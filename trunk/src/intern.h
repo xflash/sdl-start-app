@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <math.h>
 using namespace std;
 
 #include "sys_types.h"
@@ -52,6 +53,12 @@ static Point getCenter(Rect* rect) {
   return pt;
 }
 
+static uint getDistance(Point* p1, Point* p2) {
+  uint32 dx = abs(p2->x-p1->x);
+  uint32 dy = abs(p2->y-p1->y);
+  return (uint)sqrt((double)dx*dx + dy*dy);
+}
+
 struct Frame{
   Rect loc;
 };
@@ -69,6 +76,7 @@ struct TileSheet {
   string id;
   int surfId;
   map<string, TileAnimation*> tileAnimations;
+  vector<Frame*> tiles;
 };
 
 

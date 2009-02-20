@@ -45,13 +45,13 @@ public:
 
   virtual uint8 readSurface(string filename, uint32 bgColor)=0;;
 
-  virtual void drawImage(uint8 surfId, int16 x, int16 y) = 0;
-  virtual void drawImage(uint8 surfId, Rect* srcImg, Point* dstRect) = 0;
+  //virtual void drawImage(uint8 surfId, int16 x, int16 y) = 0;
+  virtual void drawImage(uint8 surfId, Rect* src, Rect* dst) = 0;
   virtual void drawString(Point* loc, string msg, ...) = 0;
   virtual void drawPixel(Point* loc) = 0;
-  virtual void drawLine(Point* start, Point* end) = 0;
+  virtual void drawLine(Point* start, Point* end, uint32 color) = 0;
   virtual void drawRect(Rect* box, uint32 color) = 0;
-  virtual void drawCircle(Point* center, uint16 radius, uint32 color) = 0;
+  virtual void drawCircle(Point* center, uint16 radius, uint32 color, bool fill=false) = 0;
 };
 
 extern SystemStub *SystemStub_SDL_create();

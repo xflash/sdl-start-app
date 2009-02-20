@@ -28,14 +28,14 @@ public:
 	virtual void sleep(uint32 duration);
   virtual void updateScreen();
   virtual uint32 getTimeStamp();
-  virtual void drawImage(uint8 resId, int16 x, int16 y);
-  virtual void drawImage(uint8 resId, Rect* srcImg, Point* dstRect);
+  //virtual void drawImage(uint8 resId, int16 x, int16 y);
+  virtual void drawImage(uint8 surfId, Rect* src, Rect* dst);
   virtual uint8 readSurface(string filename, uint32 bgColor);
   virtual void drawString(Point* loc, string msg, ...);
   virtual void drawPixel(Point* loc);
-  virtual void drawLine(Point* start, Point* end);
+  virtual void drawLine(Point* start, Point* end, uint32 color);
   virtual void drawRect(Rect* box, uint32 color);
-  virtual void drawCircle(Point* center, uint16 radius, uint32 color);
+  virtual void drawCircle(Point* center, uint16 radius, uint32 color, bool fill=false);
 };
 
 SystemStub *SystemStub_SDL_create() {
@@ -171,16 +171,24 @@ uint32 SystemStub_SDL::getTimeStamp() {
 	return SDL_GetTicks();
 }
 
+/*
 void SystemStub_SDL::drawImage(uint8 resId, int16 x, int16 y) {
   Point p; p.x=x; p.y=y;
   drawImage(resId, NULL, &p);
 }
+*/
 
-void SystemStub_SDL::drawImage(uint8 resId, Rect* srcImg, Point* dstRect) {
-  SDL_Surface* surfToBlit=_surfaces[resId];
+void SystemStub_SDL::drawImage(uint8 surfId, Rect* src, Rect* dst) {
+//void SystemStub_SDL::drawImage(uint8 resId, Rect* srcImg, Point* dstRect) {
+  SDL_Surface* surfToBlit=_surfaces[surfId];
+
+  SDL_BlitSurface(surfToBlit, (SDL_Rect*)src, _screen, (SDL_Rect*)dst);
+
+  /*
   SDL_Rect blitSrc;
   SDL_Rect blitDst;
-  blitDst.x=dstRect->x; blitDst.y=dstRect->y;
+  blitDst.x=dst->x; 
+  blitDst.y=dst->y;
 
   if(srcImg!=NULL) {
     blitDst.x=dstRect->x; blitDst.y=dstRect->y;
@@ -190,7 +198,8 @@ void SystemStub_SDL::drawImage(uint8 resId, Rect* srcImg, Point* dstRect) {
     SDL_BlitSurface(surfToBlit, &blitSrc, _screen, &blitDst);
   } else {
     SDL_BlitSurface(surfToBlit, NULL, _screen, &blitDst);
-  }
+  }*/
+
 }
 
 uint8 SystemStub_SDL::readSurface(string filename, uint32 bgColor) {
@@ -211,11 +220,19 @@ uint8 SystemStub_SDL::readSurface(string filename, uint32 bgColor) {
 }
 
 void SystemStub_SDL::drawString(Point* loc, string msg, ...) {
+  static char buf[1024];
+
   if(_txtSurf!=NULL)
     SDL_FreeSurface(_txtSurf);
   SDL_Color bg = {0,0,0};
   SDL_Color fg = {0x1f,0x2f,0x3f};
-  _txtSurf = TTF_RenderText_Blended(_font, msg.c_str(), fg);
+
+  va_list va;
+  va_start(va, msg);
+  vsprintf(buf, msg.c_str(), va);
+  va_end(va);
+
+  _txtSurf = TTF_RenderText_Blended(_font, buf, fg);
 
   SDL_Rect blitDst;
   blitDst.x=loc->x; blitDst.y=loc->y;
@@ -227,14 +244,17 @@ void SystemStub_SDL::drawPixel(Point* loc) {
   pixelColor(_screen, loc->x, loc->y, 0);
 }
 
-void SystemStub_SDL::drawLine(Point* start, Point* end) {
-  lineColor(_screen, start->x, start->y, end->x, end->y, 0x0F0F0FFF);
+void SystemStub_SDL::drawLine(Point* start, Point* end, uint32 color) {
+  lineColor(_screen, start->x, start->y, end->x, end->y, color);
 }
 
 void SystemStub_SDL::drawRect(Rect* box, uint32 color) {
   boxColor(_screen, box->x, box->y, box->x+box->w, box->y+box->h, color);
 }
 
-void SystemStub_SDL::drawCircle(Point* center, uint16 radius, uint32 color) {
-  circleColor(_screen, center->x, center->y, radius, color);
+void SystemStub_SDL::drawCircle(Point* center, uint16 radius, uint32 color, bool fill) {
+  if(fill)
+    filledCircleColor(_screen, center->x, center->y, radius, color);
+  else
+    circleColor(_screen, center->x, center->y, radius, color);
 }

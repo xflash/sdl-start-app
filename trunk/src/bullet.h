@@ -26,9 +26,10 @@ public:
   SystemStub* _stub;
   Game* _game;
   int _surfId;
-  Rect _blitter;
   Point _loc;
   Rect _bbox;
+  Rect _frameBlitter;
+  Rect _dstBlitter;
   uint _frame;
   float _speed;
   float _angle;

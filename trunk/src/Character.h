@@ -30,7 +30,8 @@ public:
   Rect _bbox;
   int16 _xd;
   int16 _yd;
-  Rect  _blitter;
+  Rect  _frameBlitter;
+  Rect  _dstBlitter;
   uint8 _surfId;
   string _tilename;
 
