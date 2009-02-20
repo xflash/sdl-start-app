@@ -33,6 +33,18 @@ struct Rect {
   int16 h;
 };
 
+static void copyRects(Rect* src, Rect* target) {
+  target->x = src->x;
+  target->y = src->y;
+  target->w = src->w;
+  target->h = src->h;
+}
+
+static bool overlapRects(Rect* a, Rect* b) {
+  return ((a->x<(b->x+b->w)) &&((a->x+a->w)>b->x)
+        &&(a->y<(b->y+b->h)) &&((a->y+a->h)>b->y));
+}
+
 static Point getCenter(Rect* rect) {
   Point pt;
   pt.x=rect->x+rect->w/2;

@@ -1,7 +1,17 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <tilesheets>
-    
+    <tilesheet id="axe" filename="axe.png" bg="FF00FF">
+      <tileanimation id="axe">
+        <frameset id="standing">
+          <frame x="0" y="0" w="19" h="19"/>
+        </frameset>
+        <frameset id="explosing">
+          <frame x="0" y="0" w="19" h="19"/>
+        </frameset>
+      </tileanimation>
+    </tilesheet>
+
     <tilesheet id="bullets" filename="bullets.png" bg="FF00FF">
       <tileanimation id="bullet">
         <frameset id="standing">
@@ -36,8 +46,8 @@
           <frame x="201" y="177" w="16" h="24"/>
         </frameset>
         <frameset id="down">
-          <frame x="153" y="209" w="16" h="24"/>
           <frame x="177" y="209" w="16" h="24"/>
+          <frame x="153" y="209" w="16" h="24"/>
           <frame x="201" y="209" w="16" h="24"/>
         </frameset>
         <frameset id="left">
@@ -59,8 +69,8 @@
           <frame x="124" y="174" w="24" h="32"/>
         </frameset>
         <frameset id="down">
-          <frame x="76"  y="206" w="24" h="32"/>
           <frame x="100" y="206" w="24" h="32"/>
+          <frame x="76"  y="206" w="24" h="32"/>
           <frame x="124" y="206" w="24" h="32"/>
         </frameset>
         <frameset id="left">

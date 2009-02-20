@@ -2,14 +2,20 @@
 #define __GAME_H__
 
 #include "intern.h"
-#include "Character.h"
 #include "resources.h"
-#include "bullet.h"
 #include <string>
+#include <map>
 #include <vector>
 using namespace std;
 
 class SystemStub;
+class CharacterUpdater;
+class Character;
+class BulletPool;
+class TiXmlElement;
+
+typedef map<string, Character*> T_Characters;
+typedef T_Characters::iterator IT_Characters;
 
 class Game {
 public:
@@ -18,11 +24,11 @@ public:
     GAMESCREEN_H = 480,
   };
 
-  SystemStub *_stub;
-  vector<Character*> _characters;
-  Character _peon;
+  string _datadir;
   Resources _res;
-  BulletPool _bullets;
+  SystemStub *_stub;
+  BulletPool* _bullets;
+  T_Characters _characters;
 
 	Game(SystemStub * stub, string datadir);
 
@@ -31,6 +37,11 @@ public:
   void draw();
 	void mainLoop();
   uint32 updateTiming();
+
+private:
+  void init();
+  Character* createCharacterFromXmlElement(TiXmlElement* element, CharacterUpdater* updater);
+  void close();
 
 };
 

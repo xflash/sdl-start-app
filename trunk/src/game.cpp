@@ -1,30 +1,80 @@
 #include <ctime>
 #include "systemstub.h"
 #include "game.h"
-#include <math.h>
+#include "Character.h"
+#include "HumanPlayer.h"
+#include "HumanSeeker.h"
+#include "bullet.h"
+#include <sstream>
+#include <iostream>
+#include "tinyXML/TinyXML.h"
+
 
 Game::Game(SystemStub* stub, string datadir)
-	: _stub(stub), _peon(stub, "peon"), _res(stub, datadir) {
+	: _stub(stub), _res(stub, datadir),_datadir(datadir) {
 }
 
-void Game::run() {
+Character* Game::createCharacterFromXmlElement(TiXmlElement* character, CharacterUpdater* updater) {
+  const char* id = character->Attribute("id");
+  const char* tilepath = character->Attribute("tilepath");
+  const char* dbg = character->Attribute("dbg");
+  Character* c = new Character(_stub, updater);
+  if(dbg!=NULL)
+    c->_dbg=_stricmp("true", dbg)==0;
+  c->init(&_res, tilepath);
+  c->_loc.x=atoi(character->Attribute("x"));
+  c->_loc.y=atoi(character->Attribute("y"));
+  _characters[id]=c;
+
+  return c;
+}
+
+void Game::init() {
 	_stub->init("Test", GAMESCREEN_W, GAMESCREEN_H);
   _res.loadAll();
-  _peon.init(&_res);
-  _peon._loc.x=100;
-  _bullets.init(500, &_res, _stub);
 
-  _characters.push_back(new Character(_stub, "orc"));
-	
-		for (uint i = 0; i < _characters.size(); i++) {
-			Character* act=_characters[i];
-  		act->init(&_res);
-		}
+  ostringstream ostr;
+  ostr << _datadir << "/" << "game.xml";
+  cout << "Loading Game from ("<<ostr.str()<<")" << endl;
 
-  mainLoop();
+  string filename = ostr.str();
+  TiXmlDocument doc(filename.c_str());
+  if (!doc.LoadFile())
+    throw new SystemException("Could not load test file '%s'. Error='%s'.", filename.c_str(), doc.ErrorDesc() );
+
+  TiXmlNode* root = doc.FirstChild("game");
+  assert(root);
+
+  TiXmlElement* bullets=root->FirstChildElement("bullets");
+  _bullets = new BulletPool();
+  int nb = atoi(bullets->Attribute("nb"));
+  const char* tilepath = bullets->Attribute("tilepath");
+  _bullets->init(nb, &_res, _stub, this, tilepath);
+
+
+  HumanSeeker* hs = new HumanSeeker(_stub, 70);
+  HumanPlayer* hp=new HumanPlayer(&_stub->_pi, _bullets);
+
+  TiXmlNode* player=root->FirstChild("player");
+  TiXmlElement* playerCharacter = player->FirstChildElement("character");
+  createCharacterFromXmlElement(playerCharacter, hp);
+
+  TiXmlNode* characters=root->FirstChild("characters");
+  for(TiXmlElement* character=characters->FirstChildElement();character;character=character->NextSiblingElement()) {
+    createCharacterFromXmlElement(character, hs);
+  }
+
+}
+
+void Game::close() {
 	_stub->destroy();
 }
 
+void Game::run() {
+  init();
+  mainLoop();
+  close();
+}
 
 void Game::mainLoop() {
   while (!_stub->_pi.quit) {
@@ -36,93 +86,46 @@ void Game::mainLoop() {
 	}
 }
 
-class PlayerUpdater {
-private:
-  PlayerInput* _pi;
-  BulletPool* _bullets;
-  uint32 _frames;
-public:
-  PlayerUpdater(PlayerInput* pi, BulletPool* bullets):_pi(pi), _bullets(bullets),_frames(0) {}
-
-  void updateCharacter(Character* character) {
-
-    character->updateInput();
-    character->update();
-
-    if(_pi->click) {
-      //_pi->click = false;
-      //float speed=0.3f*dist;
-      _frames++;
-      if(_frames%2) {
-        shoot(character);
-      }
-    }
-  }
-
-    void shoot(Character* character) {
-      float dY = (float) _pi->mouseY-character->_loc.y;
-      float dX = (float) _pi->mouseX-character->_loc.x;
-      float angle = atan2(dY, dX);
-      float dist = sqrt(dX*dX + dY*dY);
-
-      float speed=10.3f;
-      int16 sx = character->_loc.x;
-      int16 sy = character->_loc.y;
-      _bullets->getInstance()->start(sx, sy, angle-0.15, speed);
-      _bullets->getInstance()->start(sx, sy, angle-0.1,  speed);
-      _bullets->getInstance()->start(sx, sy, angle,      speed);
-      _bullets->getInstance()->start(sx, sy, angle+0.1,  speed);
-      _bullets->getInstance()->start(sx, sy, angle+0.15, speed);
-    }
-};
-
 void Game::move() {
-  static PlayerUpdater pu(&_stub->_pi, &_bullets);
-  pu.updateCharacter(&_peon);
 
-  for (uint i = 0; i < _characters.size(); i++) {
-	  Character* act=_characters[i];
-	  act->update();
+  IT_Characters it;
+  for(it=_characters.begin(); it!=_characters.end(); ++it) {
+	  (it->second)->update();
   }
 
-  _bullets.move();
+  _bullets->move();
 }
 
 void Game::draw() {
   static Point locMsg;
-  static char buf[256];
   static Point locMouse;
   locMouse.x = _stub->_pi.mouseX;
   locMouse.y = _stub->_pi.mouseY;
 
-  _peon.draw();
-  _stub->drawLine(&_peon._loc, &locMouse);
+  //_peon.draw();
+  //_stub->drawLine(&_peon._loc, &locMouse);
 
-	for (uint i = 0; i < _characters.size(); i++) {
-		Character* act=_characters[i];
-		act->draw();
-	}
-
-  _bullets.draw();
+  IT_Characters it;
+  for(it=_characters.begin(); it!=_characters.end(); ++it) {
+	  Character* act=it->second;
+	  (it->second)->draw();
+  }
+  
+  _bullets->draw();
 
   locMsg.y=locMsg.x=0;
   static int msgRowSize=10;
 
   uint32 delay = updateTiming();
-  sprintf(buf, "FrameTime: %d ms",delay);
-  _stub->drawString(&locMsg, buf);
+  _stub->drawString(&locMsg, "FrameTime: %d ms",delay);
   locMsg.y+=msgRowSize;
 
-  sprintf(buf, "Bullets: %d/%d",_bullets.getNum(), _bullets.getNumMax());
-  _stub->drawString(&locMsg, buf);
+  _stub->drawString(&locMsg, "Bullets: %d/%d",_bullets->getNum(), _bullets->getNumMax());
   locMsg.y+=msgRowSize;
 
-  sprintf(buf, "Mouse: (%d,%d) %s", _stub->_pi.mouseX, _stub->_pi.mouseY, (_stub->_pi.click)?"Click":"");
-  _stub->drawString(&locMsg, buf);
+  _stub->drawString(&locMsg, "Mouse: (%d,%d) %s", _stub->_pi.mouseX, _stub->_pi.mouseY, (_stub->_pi.click)?"Click":"");
   locMsg.y+=msgRowSize;
-
 }
-
 
 uint32 Game::updateTiming() {
 	static uint32 tstamp = 0;
