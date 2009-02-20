@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<game>
+
+  <bullets nb="500" tilepath="bullets.bullet"/>
+  <!--
+  <bullets nb="500" tilepath="axe.axe"/>
+  -->
+
+  <player>
+    <character id="peon" tilepath="tilesW3.peon" x="10" y="200" dbg="true"/>
+  </player>
+
+  <characters>
+    <character id="orc1" tilepath="tilesW3.orc" x="180" y="10"/>
+    <character id="orc2" tilepath="tilesW3.orc" x="180" y="40"/>
+    <character id="orc3" tilepath="tilesW3.orc" x="180" y="70"/>
+    <character id="orc4" tilepath="tilesW3.orc" x="180" y="100" dbg="true"/>
+    <character id="orc5" tilepath="tilesW3.orc" x="180" y="130"/>
+    <character id="orc6" tilepath="tilesW3.orc" x="180" y="160"/>
+  </characters>
+
+</game>

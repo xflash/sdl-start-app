@@ -31,9 +31,11 @@ public:
   virtual void drawImage(uint8 resId, int16 x, int16 y);
   virtual void drawImage(uint8 resId, Rect* srcImg, Point* dstRect);
   virtual uint8 readSurface(string filename, uint32 bgColor);
-  virtual void drawString(Point* loc, string msg);
+  virtual void drawString(Point* loc, string msg, ...);
   virtual void drawPixel(Point* loc);
   virtual void drawLine(Point* start, Point* end);
+  virtual void drawRect(Rect* box, uint32 color);
+  virtual void drawCircle(Point* center, uint16 radius, uint32 color);
 };
 
 SystemStub *SystemStub_SDL_create() {
@@ -181,7 +183,7 @@ void SystemStub_SDL::drawImage(uint8 resId, Rect* srcImg, Point* dstRect) {
   blitDst.x=dstRect->x; blitDst.y=dstRect->y;
 
   if(srcImg!=NULL) {
-    blitDst.x=dstRect->x - srcImg->w/2; blitDst.y=dstRect->y - srcImg->h/2;
+    blitDst.x=dstRect->x; blitDst.y=dstRect->y;
     blitSrc.x=srcImg->x; blitSrc.y=srcImg->y;
     blitSrc.w=srcImg->w; blitSrc.h=srcImg->h;
     blitDst.w=srcImg->w; blitDst.h=srcImg->h;
@@ -189,7 +191,6 @@ void SystemStub_SDL::drawImage(uint8 resId, Rect* srcImg, Point* dstRect) {
   } else {
     SDL_BlitSurface(surfToBlit, NULL, _screen, &blitDst);
   }
-
 }
 
 uint8 SystemStub_SDL::readSurface(string filename, uint32 bgColor) {
@@ -209,7 +210,7 @@ uint8 SystemStub_SDL::readSurface(string filename, uint32 bgColor) {
   throw new SystemException("Unable to read Surface from %s",filename.c_str());
 }
 
-void SystemStub_SDL::drawString(Point* loc, string msg) {
+void SystemStub_SDL::drawString(Point* loc, string msg, ...) {
   if(_txtSurf!=NULL)
     SDL_FreeSurface(_txtSurf);
   SDL_Color bg = {0,0,0};
@@ -228,4 +229,12 @@ void SystemStub_SDL::drawPixel(Point* loc) {
 
 void SystemStub_SDL::drawLine(Point* start, Point* end) {
   lineColor(_screen, start->x, start->y, end->x, end->y, 0x0F0F0FFF);
+}
+
+void SystemStub_SDL::drawRect(Rect* box, uint32 color) {
+  boxColor(_screen, box->x, box->y, box->x+box->w, box->y+box->h, color);
+}
+
+void SystemStub_SDL::drawCircle(Point* center, uint16 radius, uint32 color) {
+  circleColor(_screen, center->x, center->y, radius, color);
 }

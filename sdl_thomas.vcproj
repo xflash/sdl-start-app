@@ -174,10 +174,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\animated.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\bullet.cpp"
 				>
 			</File>
@@ -191,6 +187,14 @@
 			</File>
 			<File
 				RelativePath=".\src\game.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\HumanPlayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\HumanSeeker.cpp"
 				>
 			</File>
 			<File
@@ -220,10 +224,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\animated.h"
-				>
-			</File>
-			<File
 				RelativePath=".\src\bullet.h"
 				>
 			</File>
@@ -232,11 +232,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\CharacterUpdater.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\exceptions.h"
 				>
 			</File>
 			<File
 				RelativePath=".\src\game.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\HumanPlayer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\HumanSeeker.h"
 				>
 			</File>
 			<File
@@ -261,6 +273,10 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\datas\game.xml"
+				>
+			</File>
 			<File
 				RelativePath=".\datas\resources.xml"
 				>
