@@ -3,12 +3,16 @@
 #include "systemstub.h"
 #include "game.h"
 #include "Character.h"
+#include "tinyXML/TinyXML.h"
 #include <math.h>
 
-void BulletPool::init(int nb, Resources* res, SystemStub* stub, Game* game, string tilepath) {
+BulletPool::BulletPool(Game* game, TiXmlElement* bullets) {
+  int nb = atoi(bullets->Attribute("nb"));
+  string tilepath = bullets->Attribute("tilepath");
   string tilesheet = tilepath.substr(0, tilepath.find('.'));
   string tilename = tilepath.substr(tilepath.find('.')+1);
-  TileSheet* bulletsSheet=res->_tileSheets[tilesheet];
+
+  TileSheet* bulletsSheet=game->getRessources()->_tileSheets[tilesheet];
   int surfId = bulletsSheet->surfId;
 
   TileAnimation* bulletTile=bulletsSheet->tileAnimations[tilename];
@@ -16,8 +20,8 @@ void BulletPool::init(int nb, Resources* res, SystemStub* stub, Game* game, stri
   InitActorArgs args(4);
   args[0]=(void*)surfId;
   args[1]=bulletTile;
-  args[2]=stub;
-  args[3]=game;
+  args[2]=game->getStub();
+  args[3]=game->getCharacters();
 
   createActors(nb, &args);
 }
@@ -28,7 +32,7 @@ void Bullet::init(InitActorArgs* args) {
   _standing= bulletTile->framesets["standing"];
   _explosingSet= bulletTile->framesets["explosing"];
   _stub= (SystemStub*)(*args)[2];
-  _game= (Game*)(*args)[3];
+  _characters= (T_Characters*)(*args)[3];
 }
 
 void Bullet::start(Character* origin, float angle, float speed) {
@@ -63,7 +67,7 @@ void Bullet::move() {
       explose();
   }
   IT_Characters it;
-  for(it=_game->_characters.begin(); it!=_game->_characters.end(); ++it) {
+  for(it=_characters->begin(); it!=_characters->end(); ++it) {
     Character* character=it->second;
     if(character != _origin && overlapRects(&character->_bbox, &_bbox)) {
       explose();

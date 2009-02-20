@@ -80,4 +80,11 @@ struct TileSheet {
 };
 
 
+class Character;
+
+typedef map<string, Character*> T_Characters;
+typedef T_Characters::iterator IT_Characters;
+
+
+
 #endif // __INTERN_H__

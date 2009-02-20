@@ -5,6 +5,7 @@
 #include "HumanPlayer.h"
 #include "HumanSeeker.h"
 #include "bullet.h"
+#include "Maps.h"
 #include <sstream>
 #include <iostream>
 #include "tinyXML/TinyXML.h"
@@ -33,6 +34,8 @@ void Game::init() {
 	_stub->init("Test", GAMESCREEN_W, GAMESCREEN_H);
   _res.loadAll();
 
+  _maps = new Maps();
+
   ostringstream ostr;
   ostr << _datadir << "/" << "game.xml";
   cout << "Loading Game from ("<<ostr.str()<<")" << endl;
@@ -45,12 +48,7 @@ void Game::init() {
   TiXmlNode* root = doc.FirstChild("game");
   assert(root);
 
-  TiXmlElement* bullets=root->FirstChildElement("bullets");
-  _bullets = new BulletPool();
-  int nb = atoi(bullets->Attribute("nb"));
-  const char* tilepath = bullets->Attribute("tilepath");
-  _bullets->init(nb, &_res, _stub, this, tilepath);
-
+  _bullets = new BulletPool(this, root->FirstChildElement("bullets"));
 
   HumanPlayer* hp=new HumanPlayer(&_stub->_pi, _bullets);
 

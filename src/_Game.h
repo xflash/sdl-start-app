@@ -4,8 +4,6 @@
 #include "intern.h"
 #include "resources.h"
 #include <string>
-#include <map>
-#include <vector>
 using namespace std;
 
 class SystemStub;
@@ -13,36 +11,40 @@ class CharacterUpdater;
 class Character;
 class BulletPool;
 class TiXmlElement;
+class Maps;
 
-typedef map<string, Character*> T_Characters;
-typedef T_Characters::iterator IT_Characters;
 
 class Game {
+private:
+  string _datadir;
+  Resources _res;
+  Maps* _maps;
+  SystemStub *_stub;
+  BulletPool* _bullets;
+  T_Characters _characters;
+
 public:
   enum {
     GAMESCREEN_W = 640,
     GAMESCREEN_H = 480,
   };
 
-  string _datadir;
-  Resources _res;
-  SystemStub *_stub;
-  BulletPool* _bullets;
-  T_Characters _characters;
-
-	Game(SystemStub * stub, string datadir);
-
+public:
+  Game(SystemStub * stub, string datadir);
 	void run();
-  void move();
-  void draw();
-	void mainLoop();
-  uint32 updateTiming();
+
+  Resources* getRessources() { return &_res; }
+  SystemStub* getStub() { return _stub; }
+  T_Characters* getCharacters() { return &_characters; }
 
 private:
+  void move();
+  void draw();
+  void mainLoop();
+  uint32 updateTiming();
   void init();
   Character* createCharacterFromXmlElement(TiXmlElement* element, CharacterUpdater* updater);
   void close();
-
 };
 
 #endif // __GAME_H__
