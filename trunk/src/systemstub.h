@@ -20,8 +20,7 @@ struct PlayerInput {
 
 	uint8 dirMask;
   uint8 dbgMask;
-  int16 mouseX;
-  int16 mouseY;
+  Point mouse;
   bool click;
 	bool space;
 	char lastChar;

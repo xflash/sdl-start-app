@@ -6,16 +6,12 @@
 class SystemStub;
 class Resources;
 class CharacterUpdater;
+class TiXmlElement;
+class Game;
 
 class Character{
-public:
-  enum {
-    ACC_X=  5,
-    ACC_Y=  3,
-  };
-
+private:
   CharacterUpdater* _updater;
-
   FrameSet* _upSet;
   FrameSet* _downSet;
   FrameSet* _leftSet;
@@ -35,12 +31,21 @@ public:
   uint8 _surfId;
   string _tilename;
 
-  Character(SystemStub* stub, CharacterUpdater* updater);
+public:
+  enum {
+    ACC_X=  5,
+    ACC_Y=  3,
+  };
+
+
+  Character(Game* game, CharacterUpdater* updater, TiXmlElement* elementCharacter);
   
-  void init(Resources* res, string tilepath);
+
   void update();
   void updateInput();
   void draw();
+
+  Rect* getBBox() { return &_bbox; }
 
   void moveLeft();
   void moveRight();

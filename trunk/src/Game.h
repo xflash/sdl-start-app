@@ -3,6 +3,7 @@
 
 #include "intern.h"
 #include "resources.h"
+#include "Maps.h"
 #include <string>
 using namespace std;
 
@@ -10,15 +11,12 @@ class SystemStub;
 class CharacterUpdater;
 class Character;
 class BulletPool;
-class TiXmlElement;
-class Maps;
-
 
 class Game {
 private:
   string _datadir;
   Resources _res;
-  Maps* _maps;
+  Maps _maps;
   SystemStub *_stub;
   BulletPool* _bullets;
   T_Characters _characters;
@@ -43,7 +41,6 @@ private:
   void mainLoop();
   uint32 updateTiming();
   void init();
-  Character* createCharacterFromXmlElement(TiXmlElement* element, CharacterUpdater* updater);
   void close();
 };
 

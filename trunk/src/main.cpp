@@ -1,5 +1,5 @@
 #include "systemstub.h"
-#include "game.h"
+#include "Game.h"
 
 int main(int argc, char *argv[]) {
 	SystemStub *stub = SystemStub_SDL_create();

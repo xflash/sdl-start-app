@@ -93,8 +93,8 @@ void SystemStub_SDL::processEvents() {
 			_pi.quit = true;
 			break;
     case SDL_MOUSEMOTION:
-      _pi.mouseX = ev.motion.x;
-      _pi.mouseY = ev.motion.y;
+      _pi.mouse.x = ev.motion.x;
+      _pi.mouse.y = ev.motion.y;
       break;
     case SDL_MOUSEBUTTONDOWN:
       _pi.click = true;

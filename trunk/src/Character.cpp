@@ -1,23 +1,28 @@
 #include "Character.h"
-#include "game.h"
+#include "Game.h"
 #include "systemstub.h"
 #include "resources.h"
 #include "CharacterUpdater.h"
 #include <iostream>
 using namespace std;
+#include "tinyXML/TinyXML.h"
 
 
-Character::Character(SystemStub* stub, CharacterUpdater* updater): _stub(stub), _updater(updater){
+Character::Character(Game* game, CharacterUpdater* updater, TiXmlElement* elementCharacter):
+  _stub(game->getStub()), _updater(updater){
   _dbg=false;
-  _loc.x = Game::GAMESCREEN_W/2;
-  _loc.y = Game::GAMESCREEN_H/2;
   _xd = _yd = 0;
-}
 
-void Character::init(Resources* res, string tilepath) {
+  const char* dbg = elementCharacter->Attribute("dbg");
+  if(dbg!=NULL)
+    _dbg=_stricmp("true", dbg)==0;
+  _loc.x=atoi(elementCharacter->Attribute("x"));
+  _loc.y=atoi(elementCharacter->Attribute("y"));
+
+  string tilepath = elementCharacter->Attribute("tilepath");
   string tilesheet = tilepath.substr(0, tilepath.find('.'));
   string tilename = tilepath.substr(tilepath.find('.')+1);
-  TileSheet* tileSheet = res->_tileSheets[tilesheet];
+  TileSheet* tileSheet = game->getRessources()->getTileSheet(tilesheet);
   _surfId = tileSheet->surfId;
 
   TileAnimation* peonTile=tileSheet->tileAnimations[tilename];

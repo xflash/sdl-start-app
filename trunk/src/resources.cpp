@@ -7,22 +7,20 @@
 #include <set>
 using namespace std;
 
-#define DEFAULT_RESOURCES_XML_FILENAME "resources.xml"
-
-Resources::Resources(SystemStub* stub, string datadir) 
-:_datadir(datadir), _stub(stub) { 
+Resources::Resources(SystemStub* stub) : _stub(stub) { 
 }
 
-void Resources::loadAll() {
+void Resources::loadAll(string datadir, string filename) {
+
   ostringstream ostr;
-  ostr << _datadir << "/" << DEFAULT_RESOURCES_XML_FILENAME;
+  ostr << datadir << "/" << filename;
+
   cout << "Loading Resources from ("<<ostr.str()<<")" << endl;
 
-  string filename = ostr.str();
-  TiXmlDocument doc(filename.c_str());
+  TiXmlDocument doc(ostr.str().c_str());
   bool loadOkay = doc.LoadFile();
   if (!loadOkay)
-    throw new SystemException("Could not load test file '%s'. Error='%s'.", filename.c_str(), doc.ErrorDesc() );
+    throw new SystemException("Could not load test file '%s'. Error='%s'.", ostr.str().c_str(), doc.ErrorDesc() );
 
   TiXmlNode* root = doc.FirstChild("resources");
   assert(root);
@@ -34,7 +32,7 @@ void Resources::loadAll() {
     ts->id=tileSheet->Attribute("id");
     cout << "\tParsing TileSheet id: " << ts->id << endl;
     string tsfilename;
-    tsfilename += _datadir + "/" + tileSheet->Attribute("filename");
+    tsfilename += datadir + "/" + tileSheet->Attribute("filename");
     uint32 bg;
     sscanf(tileSheet->Attribute("bg"), "%x", &bg);
     ts->surfId = _stub->readSurface(tsfilename, bg);
@@ -97,4 +95,8 @@ void* Resources:load(int id) {
 
 void Resources::destroy() {
   
+}
+
+TileSheet* Resources::getTileSheet(string id) {
+  return _tileSheets.find(id)->second;
 }
