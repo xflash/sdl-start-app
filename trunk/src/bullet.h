@@ -9,6 +9,7 @@ class Resources;
 class SystemStub;
 class Game;
 class Character;
+class TiXmlElement;
 
 class Bullet : public Actor {
 public:
@@ -24,7 +25,7 @@ public:
   FrameSet* _standing;
   FrameSet* _explosingSet;
   SystemStub* _stub;
-  Game* _game;
+  T_Characters* _characters;
   int _surfId;
   Point _loc;
   Rect _bbox;
@@ -41,7 +42,7 @@ public:
 
 class BulletPool : public ActorPool<Bullet> {
 public:
-  void init(int nb, Resources* res, SystemStub* stub, Game* game, string tilepath);
+  BulletPool(Game* game, TiXmlElement* element);
 };
 
 
