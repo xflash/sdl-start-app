@@ -38,13 +38,24 @@ void Resources::loadAll(string datadir, string filename) {
     ts->surfId = _stub->readSurface(tsfilename, bg);
     _tileSheets[ts->id]=ts;
 
+    int lastW, lastH, lastY, lastX;
     for(TiXmlElement* tile=tileSheet->FirstChildElement("tile");tile;tile=tile->NextSiblingElement()) {
       //<tile id="water" x="0" y="0" w="18" h="18"/>
       Frame* f = new Frame();
-      f->loc.x=atoi(tile->Attribute("x"));
-      f->loc.y=atoi(tile->Attribute("y"));
-      f->loc.w=atoi(tile->Attribute("w"));
-      f->loc.h=atoi(tile->Attribute("h"));
+      if(tile->Attribute("w")!=NULL)
+        lastW=atoi(tile->Attribute("w"));
+      if(tile->Attribute("h")!=NULL)
+        lastH=atoi(tile->Attribute("h"));
+      if(tile->Attribute("y")!=NULL)
+        lastY=atoi(tile->Attribute("y"));
+      if(tile->Attribute("x")==NULL)
+        lastX+=lastW;
+      else
+        lastX=atoi(tile->Attribute("x"));
+      f->loc.x=lastX;
+      f->loc.y=lastY;
+      f->loc.w=lastW;
+      f->loc.h=lastH;
       ts->tiles.push_back(f);
       cout << "\t\t\tParsing Tile ("<<f->loc.x << "," <<f->loc.y << ") - ("<< f->loc.w<<"x"<<f->loc.h<<")"<< endl;
     }

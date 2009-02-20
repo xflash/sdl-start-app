@@ -39,7 +39,6 @@ public:
 
 
   Character(Game* game, CharacterUpdater* updater, TiXmlElement* elementCharacter);
-  
 
   void update();
   void updateInput();

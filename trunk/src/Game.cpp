@@ -5,6 +5,7 @@
 #include "HumanPlayer.h"
 #include "HumanSeeker.h"
 #include "bullet.h"
+#include "Maps.h"
 #include <sstream>
 #include <iostream>
 #include "tinyXML/TinyXML.h"
@@ -22,18 +23,21 @@ void Game::init() {
 
   _res.loadAll(_datadir, DEFAULT_RESOURCES_XML_FILENAME);
 
-  _maps.loadAll(_datadir, DEFAULT_MAPS_XML_FILENAME);
+  _maps = new Maps(this);
+  _maps->loadAll(_datadir, DEFAULT_MAPS_XML_FILENAME);
 
   ostringstream ostr;
   ostr << _datadir << "/" << DEFAULT_GAME_XML_FILENAME;
   cout << "Loading Game from ("<<ostr.str()<<")" << endl;
-  string filename = ostr.str();
-  TiXmlDocument doc(filename.c_str());
+  TiXmlDocument doc(ostr.str().c_str());
   if (!doc.LoadFile())
-    throw new SystemException("Could not load test file '%s'. Error='%s'.", filename.c_str(), doc.ErrorDesc() );
+    throw new SystemException("Could not load test file '%s'. Error='%s'.", ostr.str().c_str(), doc.ErrorDesc() );
 
   TiXmlNode* root = doc.FirstChild("game");
   assert(root);
+
+  TiXmlElement* mapElement=root->FirstChildElement("map");
+  _map = _maps->getMap(mapElement->Attribute("mapid"));
 
   _bullets = new BulletPool(this, root->FirstChildElement("bullets"));
 
@@ -75,6 +79,8 @@ void Game::mainLoop() {
 
 void Game::move() {
 
+  _mapBlit.x=_mapBlit.y=_mapBlit.w=_mapBlit.h=0;
+
   IT_Characters it;
   for(it=_characters.begin(); it!=_characters.end(); ++it) {
 	  (it->second)->update();
@@ -88,6 +94,8 @@ void Game::draw() {
 
   //_peon.draw();
   //_stub->drawLine(&_peon._loc, &locMouse);
+
+  _map->draw(&_mapBlit);
 
   IT_Characters it;
   for(it=_characters.begin(); it!=_characters.end(); ++it) {

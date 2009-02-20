@@ -39,13 +39,14 @@ void HumanSeeker::dbgDraw(Character* character) {
   //throw new SystemException("TODO HumanSeeker::dbgDraw()");
   if(_dist<=_sightRadius)
     _stub->drawCircle(&getCenter(character->getBBox()), _sightRadius, 0x0000ff1f, true);
-  else {
+  else 
     _stub->drawCircle(&getCenter(character->getBBox()), _sightRadius, 0x0000ffff);
-    if(_dist<=_fightRadius)
-      _stub->drawCircle(&getCenter(character->getBBox()), _fightRadius, 0x0ff0001f, true);
-    else
-      _stub->drawCircle(&getCenter(character->getBBox()), _fightRadius, 0x0ff000ff);
-  }
+  
+  if(_dist<=_fightRadius)
+    _stub->drawCircle(&getCenter(character->getBBox()), _fightRadius, 0xff00001f, true);
+  else
+    _stub->drawCircle(&getCenter(character->getBBox()), _fightRadius, 0xff0000ff);
+
 
   //_stub->drawString(&character->_loc, "Distance %d", _dist);
 }

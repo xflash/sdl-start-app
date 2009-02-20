@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <game>
 
+  <map mapid="m1"/>
+
   <bullets nb="500" tilepath="bullets.bullet"/>
   <!--
   <bullets nb="500" tilepath="axe.axe"/>
