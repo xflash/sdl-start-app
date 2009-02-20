@@ -1,8 +1,32 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <tilesheets>
-    <tilesheet id="map" filename="150px-Mchip0.png" bg="FF00FF">
-      <tile x="0" y="0" w="18" h="18"/>
+    <tilesheet id="map" filename="Mchip0.png" bg="FF00FF">
+      <!--0 water-->
+      <tile x="0"   y="0"   w="32" h="32"/>
+      <!--1 grass-->
+      <tile />
+      <!--2 sand 1-->
+      <tile />
+      <!--3 sand 2-->
+      <tile />
+      <!--4 wall/grass left-->
+      <tile x="0"   y="192"/>
+      <!--5 wall/grass right-->
+      <tile />
+      <!--6 wall/grass flower-->
+      <tile x="0"   y="128"/>
+      <!--7 wall-->
+      <tile />
+
+      <!--8 wall/grass bush-->
+      <tile x="0"   y="160"/>
+      <!--9 wall/grass middle-->
+      <tile />
+
+      <!--10 corner left transparent-->
+      <tile x="160"   y="128" w="32" h="32"/>
+
     </tilesheet>
     
     <tilesheet id="axe" filename="axe.png" bg="FF00FF">

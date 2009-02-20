@@ -257,4 +257,7 @@ void SystemStub_SDL::drawCircle(Point* center, uint16 radius, uint32 color, bool
     filledCircleColor(_screen, center->x, center->y, radius, color);
   else
     circleColor(_screen, center->x, center->y, radius, color);
+
+  
+
 }
