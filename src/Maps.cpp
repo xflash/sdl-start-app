@@ -5,9 +5,7 @@
 #include <iostream>
 #include <sstream>
 
-Maps::Maps(Game* game):_game(game) { }
-
-void Maps::loadAll(string datadir, string filename) {
+Maps::Maps(Game* game, string datadir, string filename) {
   ostringstream ostr;
   ostr << datadir << "/" << filename;
   cout << "Loading Maps from ("<<ostr.str()<<")" << endl;
@@ -19,7 +17,7 @@ void Maps::loadAll(string datadir, string filename) {
   TiXmlNode* maps = doc.FirstChild("maps");
   assert(maps);
   for(TiXmlElement* mapElement=maps->FirstChildElement();mapElement;mapElement=mapElement->NextSiblingElement()) {
-    _maps[mapElement->Attribute("id")] = new Map(_game, mapElement);
+    _maps[mapElement->Attribute("id")] = new Map(game, mapElement);
   }
 }
 
@@ -27,15 +25,34 @@ Map* Maps::getMap(string mapId) {
   return _maps[mapId];
 }
 
-Map::Map(Game* game, TiXmlElement* mapElement):_stub(game->getStub()) {
+Map::Map(Game* game, TiXmlElement* mapElement) {
   cout << "\tRead Map id:"<<mapElement->Attribute("id") << endl;
-  for(TiXmlElement* layerElement=mapElement->FirstChildElement("layer");layerElement;layerElement=layerElement->NextSiblingElement()) {
-    _layers.push_back(new MapLayer(game, layerElement));
+  _tileSheet = game->getRessources()->getTileSheet(mapElement->Attribute("tilepath"));
+  TiXmlElement* tilesElement = mapElement->FirstChildElement("tiles");
+  for(TiXmlElement* tileElement=tilesElement->FirstChildElement("tile");tileElement;tileElement=tileElement->NextSiblingElement()) {
+    _tiles.push_back(new MapTile(game, _tileSheet, tileElement));
+  }
+  TiXmlElement* layersElement = mapElement->FirstChildElement("layers");
+  for(TiXmlElement* layerElement=layersElement->FirstChildElement("layer");layerElement;layerElement=layerElement->NextSiblingElement()) {
+    _layers.push_back(new MapLayer(layerElement));
   }
 }
 
-MapLayer::MapLayer(Game* game, TiXmlElement* layerElement):_stub(game->getStub()) {
-  _tileSheet = game->getRessources()->getTileSheet(layerElement->Attribute("tilepath"));
+MapTile::MapTile(Game* game, TileSheet* tileSheet, TiXmlElement* layerElement) {
+  cout << "\t\tRead MapTile " << endl;
+
+  const char* residx = layerElement->Attribute("residx");
+  _resFrame =NULL;
+  if(NULL!=residx) 
+    _resFrame = tileSheet->tiles[atoi(residx)];
+   
+  const char* coll = layerElement->Attribute("coll");
+  _collision=false;
+  if(NULL!=coll) 
+    _collision=_stricmp("true", coll)==0;
+}
+
+MapLayer::MapLayer(TiXmlElement* layerElement) {
   cout << "\t\tRead MapLayer id:"<<layerElement->Attribute("id");
   int firstW=0;
   for(TiXmlElement* row=layerElement->FirstChildElement("row");row;row=row->NextSiblingElement()) {
@@ -53,14 +70,17 @@ MapLayer::MapLayer(Game* game, TiXmlElement* layerElement):_stub(game->getStub()
 
 }
 
-void Map::draw(Rect *blit) {
+
+
+/** Drawings **/
+
+void Map::draw(SystemStub* stub, Rect *blit) {
 	for (uint l=0; l<_layers.size(); l++) {
-    _layers[l]->draw(blit);
+    _layers[l]->draw(stub, blit, _tileSheet->surfId, &_tiles);
   }
 }
 
-void MapLayer::draw(Rect *blit) {
-  int surfId = _tileSheet->surfId;
+void MapLayer::draw(SystemStub* stub, Rect *blit, int surfId, vector<MapTile*>* tiles) {
   Rect dst;
   dst.x=dst.y=0;
 
@@ -70,12 +90,13 @@ void MapLayer::draw(Rect *blit) {
     for (uint c=0; c<rowContent.size(); c+=2) {
       int tile = atoi(rowContent.substr(c, 2).c_str());
       if(tile<=0) continue;
-      Frame* f = _tileSheet->tiles[tile];
+      //Frame* f = _tileSheet->tiles[tile];
+      Frame* f = tiles->at(tile)->getFrame();
       dst.w=f->loc.w;
       dst.h=f->loc.h;
       dst.y=r*f->loc.h;
       dst.x=(c/2)*f->loc.w;
-      _stub->drawImage(surfId, &f->loc, &dst);
+      stub->drawImage(surfId, &f->loc, &dst);
     }
   }
 }
