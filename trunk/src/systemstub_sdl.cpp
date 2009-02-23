@@ -224,8 +224,8 @@ void SystemStub_SDL::drawString(Point* loc, string msg, ...) {
 
   if(_txtSurf!=NULL)
     SDL_FreeSurface(_txtSurf);
-  SDL_Color bg = {0,0,0};
-  SDL_Color fg = {0x1f,0x2f,0x3f};
+  //SDL_Color bg = {0,0,0};
+  SDL_Color fg = {0xff,0xff,0xff};
 
   va_list va;
   va_start(va, msg);

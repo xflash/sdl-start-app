@@ -9,7 +9,7 @@
   -->
 
   <player>
-    <character id="peon" tilepath="tilesW3.peon" x="10" y="60" dbg="true"/>
+    <character id="peon" tilepath="tilesW3.peon" x="10" y="60" />
   </player>
 
 

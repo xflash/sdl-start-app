@@ -11,13 +11,22 @@ class TiXmlElement;
 class Game;
 class SystemStub;
 
-class Map {
+class MapLayer {
 private:
   uint16 _w;
   uint16 _h;
+  vector<string> _rows;
   TileSheet* _tileSheet;
   SystemStub* _stub;
-  vector<string> _rows;
+public:
+  MapLayer(Game* game, TiXmlElement* element);
+  void draw(Rect* blit);
+};
+
+class Map {
+private:
+  SystemStub* _stub;
+  vector<MapLayer*> _layers;
 public:
   Map(Game* game, TiXmlElement* element);
   void draw(Rect* blit);

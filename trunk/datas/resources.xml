@@ -2,30 +2,53 @@
 <resources>
   <tilesheets>
     <tilesheet id="map" filename="Mchip0.png" bg="FF00FF">
-      <!--0 water-->
+      <!--00 water-->
       <tile x="0"   y="0"   w="32" h="32"/>
-      <!--1 grass-->
+      <!--01 grass-->
       <tile />
-      <!--2 sand 1-->
+      <!--02 sand 1-->
       <tile />
-      <!--3 sand 2-->
+      <!--03 sand 2-->
       <tile />
+
       <!--4 wall/grass left-->
       <tile x="0"   y="192"/>
       <!--5 wall/grass right-->
       <tile />
+      
       <!--6 wall/grass flower-->
       <tile x="0"   y="128"/>
       <!--7 wall-->
       <tile />
-
+      
       <!--8 wall/grass bush-->
       <tile x="0"   y="160"/>
       <!--9 wall/grass middle-->
       <tile />
 
-      <!--10 corner left transparent-->
-      <tile x="160"   y="128" w="32" h="32"/>
+      <!--10 Wall/sand-->
+      <tile x="64" y="128"/>
+      <!--11 Wall/sand with stone-->
+      <tile />
+      <!--12 Wall with flower-->
+      <tile />
+      <!--13 left sand corner -->
+      <tile />
+      <!--14 right sand corner-->
+      <tile />
+
+      <!--15 gravelar-->
+      <tile x="128" y="0"/>
+
+      <!--16 grass with flower-->
+      <tile x="160" y="0"/>
+      <!--17 grass with palm tree-->
+      <tile x="160" y="32"/>
+      <!--18 grass with planche-->
+      <tile x="160" y="64"/>
+      <!--19 grass with sign-->
+      <tile x="160" y="64"/>
+
 
     </tilesheet>
     
