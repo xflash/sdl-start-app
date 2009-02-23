@@ -17,7 +17,7 @@ Maps::Maps(Game* game, string datadir, string filename) {
   TiXmlNode* maps = doc.FirstChild("maps");
   assert(maps);
   for(TiXmlElement* mapElement=maps->FirstChildElement();mapElement;mapElement=mapElement->NextSiblingElement()) {
-    _maps[mapElement->Attribute("id")] = new Map(game, mapElement);
+    _maps[mapElement->Attribute("id")] = new Map(game, datadir, mapElement);
   }
 }
 
@@ -25,61 +25,42 @@ Map* Maps::getMap(string mapId) {
   return _maps[mapId];
 }
 
-Map::Map(Game* game, TiXmlElement* mapElement) {
+Map::Map(Game* game, string datadir, TiXmlElement* mapElement) {
   cout << "\tRead Map id:"<<mapElement->Attribute("id") << endl;
   _tileSheet = game->getRessources()->getTileSheet(mapElement->Attribute("tilepath"));
-  TiXmlElement* tilesElement = mapElement->FirstChildElement("tiles");
-  for(TiXmlElement* tileElement=tilesElement->FirstChildElement("tile");tileElement;tileElement=tileElement->NextSiblingElement()) {
-    _tiles.push_back(new MapTile(game, _tileSheet, tileElement));
-  }
-  TiXmlElement* layersElement = mapElement->FirstChildElement("layers");
-  for(TiXmlElement* layerElement=layersElement->FirstChildElement("layer");layerElement;layerElement=layerElement->NextSiblingElement()) {
-    _layers.push_back(new MapLayer(layerElement));
-  }
+
+  string filename = mapElement->Attribute("filename");
+  ostringstream ostr;
+  ostr << datadir << "/" << filename;
+  FILE* f = fopen(ostr.str().c_str(), "rb");
+  if(!f)
+    throw new SystemException("Could not load map file '%s'.", filename.c_str());
+
+  fread(&_width, sizeof(uint), 1, f);
+  fread(&_heigth, sizeof(uint), 1, f);
+
+  uint nb = _width*_heigth;
+  _tiles = (MapTile*)calloc(nb, sizeof(MapTile));
+  int rd = fread(_tiles, sizeof(MapTile), nb, f);
+  if(rd!=nb) 
+    throw new SystemException("Could not load map file '%s'.", filename.c_str());
+  //rd = fread(_tiles, sizeof(MapTile), 1, f);
+  //int rd = fread(_tiles, sizeof(MapTile), _width*_heigth, f);
+  
+  fclose(f);
 }
-
-MapTile::MapTile(Game* game, TileSheet* tileSheet, TiXmlElement* layerElement) {
-  cout << "\t\tRead MapTile " << endl;
-
-  const char* residx = layerElement->Attribute("residx");
-  _resFrame =NULL;
-  if(NULL!=residx) 
-    _resFrame = tileSheet->tiles[atoi(residx)];
-   
-  const char* coll = layerElement->Attribute("coll");
-  _collision=false;
-  if(NULL!=coll) 
-    _collision=_stricmp("true", coll)==0;
-}
-
-MapLayer::MapLayer(TiXmlElement* layerElement) {
-  cout << "\t\tRead MapLayer id:"<<layerElement->Attribute("id");
-  int firstW=0;
-  for(TiXmlElement* row=layerElement->FirstChildElement("row");row;row=row->NextSiblingElement()) {
-    const char* rowContent = row->FirstChild()->Value();
-    int l = strlen(rowContent)/2;
-    if(firstW==0)
-      firstW=l;
-    if(l!=firstW)
-      throw new SystemException("Bad row content size. Should be %s",firstW);
-    _rows.push_back(rowContent);
-  }
-  _w=firstW;
-  _h=_rows.size();
-  cout << " ("<<_w<<"x"<<_h<<")"<<endl;
-
-}
-
-
 
 /** Drawings **/
 
 void Map::draw(SystemStub* stub, Rect *blit) {
-	for (uint l=0; l<_layers.size(); l++) {
+/*
+for (uint l=0; l<_layers.size(); l++) {
     _layers[l]->draw(stub, blit, _tileSheet->surfId, &_tiles);
   }
+  */
 }
 
+/*
 void MapLayer::draw(SystemStub* stub, Rect *blit, int surfId, vector<MapTile*>* tiles) {
   Rect dst;
   dst.x=dst.y=0;
@@ -100,4 +81,5 @@ void MapLayer::draw(SystemStub* stub, Rect *blit, int surfId, vector<MapTile*>* 
     }
   }
 }
+*/
 

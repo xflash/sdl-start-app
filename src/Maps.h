@@ -11,33 +11,20 @@ class TiXmlElement;
 class Game;
 class SystemStub;
 
-class MapTile {
-private:
-  Frame* _resFrame;
-  bool _collision;
-public:
-  MapTile(Game* game, TileSheet* tileSheet, TiXmlElement* element);
-  void draw(SystemStub* stub, Rect* blit);
-  Frame* getFrame() { return _resFrame; }
-};
-
-class MapLayer {
-private:
-  uint16 _w;
-  uint16 _h;
-  vector<string> _rows;
-public:
-  MapLayer(TiXmlElement* element);
-  void draw(SystemStub* stub, Rect* blit, int surfId, vector<MapTile*>* tiles);
+struct MapTile {
+  uint16 resid;
+  bool collision;
 };
 
 class Map {
 private:
-  vector<MapLayer*> _layers;
-  vector<MapTile*> _tiles;
   TileSheet* _tileSheet;
+  //uint _ntiles;
+  uint _width;
+  uint _heigth;
+  MapTile* _tiles;
 public:
-  Map(Game* game, TiXmlElement* element);
+  Map(Game* game, string datadir, TiXmlElement* element);
   void draw(SystemStub* stub, Rect* blit);
 };
 
