@@ -23,8 +23,6 @@ public:
 
 class MapLayer {
 private:
-  uint16 _w;
-  uint16 _h;
   vector<string> _rows;
 public:
   MapLayer(TiXmlElement* element);
