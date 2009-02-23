@@ -23,8 +23,7 @@ void Game::init() {
 
   _res.loadAll(_datadir, DEFAULT_RESOURCES_XML_FILENAME);
 
-  _maps = new Maps(this);
-  _maps->loadAll(_datadir, DEFAULT_MAPS_XML_FILENAME);
+  _maps = new Maps(this, _datadir, DEFAULT_MAPS_XML_FILENAME);
 
   ostringstream ostr;
   ostr << _datadir << "/" << DEFAULT_GAME_XML_FILENAME;
@@ -95,7 +94,7 @@ void Game::draw() {
   //_peon.draw();
   //_stub->drawLine(&_peon._loc, &locMouse);
 
-  _map->draw(&_mapBlit);
+  _map->draw(_stub, &_mapBlit);
 
   IT_Characters it;
   for(it=_characters.begin(); it!=_characters.end(); ++it) {
