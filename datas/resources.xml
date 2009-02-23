@@ -32,9 +32,9 @@
       <tile />
       <!--12 Wall with flower-->
       <tile />
-      <!--13 left sand corner -->
+      <!--13 top-left sand transparent corner -->
       <tile />
-      <!--14 right sand corner-->
+      <!--14 top-right sand transparent corner-->
       <tile />
 
       <!--15 gravelar-->
@@ -48,6 +48,11 @@
       <tile x="160" y="64"/>
       <!--19 grass with sign-->
       <tile x="160" y="64"/>
+
+      <!--20 bottom-left sand transparent corner -->
+      <tile x="160" y="160"/>
+      <!--21 bottom-left sand transparent corner -->
+      <tile />
 
 
     </tilesheet>

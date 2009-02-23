@@ -19,6 +19,12 @@ Character::Character(Game* game, CharacterUpdater* updater, TiXmlElement* elemen
   _loc.x=atoi(elementCharacter->Attribute("x"));
   _loc.y=atoi(elementCharacter->Attribute("y"));
 
+  TiXmlElement* bbox = elementCharacter->FirstChildElement("bbox");
+  _bbox.x=_loc.x + atoi(bbox->Attribute("x"));
+  _bbox.y=_loc.y + atoi(bbox->Attribute("y"));
+  _bbox.w=atoi(bbox->Attribute("w"));
+  _bbox.h=atoi(bbox->Attribute("h"));
+
   string tilepath = elementCharacter->Attribute("tilepath");
   string tilesheet = tilepath.substr(0, tilepath.find('.'));
   string tilename = tilepath.substr(tilepath.find('.')+1);
@@ -59,10 +65,12 @@ void Character::update() {
   _loc.x+=_xd;
   _loc.y+=_yd;
 
-  _bbox.x = _loc.x;
-  _bbox.y = _loc.y;
-  _bbox.w = _frameSet->frames[_frame]->loc.w;
-  _bbox.h = _frameSet->frames[_frame]->loc.h;
+  _bbox.x+=_xd;
+  _bbox.y+=_yd;
+//  _bbox.x = _loc.x;
+//  _bbox.y = _loc.y;
+  //_bbox.w = _frameSet->frames[_frame]->loc.w;
+  //_bbox.h = _frameSet->frames[_frame]->loc.h;
 }
 
 
@@ -78,12 +86,13 @@ void Character::draw() {
   _dstBlitter.w=_frameBlitter.w;
   _dstBlitter.h=_frameBlitter.h;
 
+  _stub->drawImage(_surfId, &_frameBlitter, &_dstBlitter);
+
   if(_dbg) {
     _stub->drawRect(&_bbox, 0xFF00007F);
     if(_updater!=NULL)
       _updater->dbgDraw(this);
   }
-  _stub->drawImage(_surfId, &_frameBlitter, &_dstBlitter);
 }
 
 

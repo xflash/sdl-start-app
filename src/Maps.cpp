@@ -53,20 +53,11 @@ MapTile::MapTile(Game* game, TileSheet* tileSheet, TiXmlElement* layerElement) {
 }
 
 MapLayer::MapLayer(TiXmlElement* layerElement) {
-  cout << "\t\tRead MapLayer id:"<<layerElement->Attribute("id");
+  cout << "\t\tRead MapLayer id:"<<layerElement->Attribute("id")<<endl;
   int firstW=0;
   for(TiXmlElement* row=layerElement->FirstChildElement("row");row;row=row->NextSiblingElement()) {
-    const char* rowContent = row->FirstChild()->Value();
-    int l = strlen(rowContent)/2;
-    if(firstW==0)
-      firstW=l;
-    if(l!=firstW)
-      throw new SystemException("Bad row content size. Should be %s",firstW);
-    _rows.push_back(rowContent);
+    _rows.push_back(row->FirstChild()->Value());
   }
-  _w=firstW;
-  _h=_rows.size();
-  cout << " ("<<_w<<"x"<<_h<<")"<<endl;
 
 }
 

@@ -9,12 +9,15 @@
   -->
 
   <player>
-    <character id="peon" tilepath="tilesW3.peon" x="10" y="60" />
+    <character id="peon" tilepath="tilesW3.peon" x="64" y="64" dbg="true">
+      <bbox x="1" y="11" w="12" h="12"/>
+    </character>
   </player>
 
 
   <characters>
     <character id="orc1" tilepath="tilesW3.orc" x="300" y="300" dbg="true">
+      <bbox x="5" y="13" w="14" h="12"/>
       <humanSeeker sightradius="200" fightradius="70" target="peon"/>
     </character>
     <!--
