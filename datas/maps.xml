@@ -1,21 +1,10 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <maps>
-  <map id="m10" tilepath="map">
+  <map id="m1" tilepath="map" filename="m1.map"/>
+  
+  <!--
     <tiles>
       <tile coll="false"/>
-      <tile residx="7" coll="true"/>
-    </tiles>
-    <layers>
-      <layer id="bg" >
-        <row>0101</row>
-      </layer>
-    </layers>
-  </map>
-
-  <map id="m1" tilepath="map" >
-    <tiles>
-      <tile coll="false"/>
-      <!--wall-->
       <tile residx="7" coll="true"/>
       <tile residx="7" coll="true"/>
       <tile residx="7" coll="true"/>
@@ -66,5 +55,6 @@
       </layer>
     </layers>
   </map>
+  -->
 
 </maps>
