@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<maps>
+  <map id="m10" tilepath="map">
+    <tiles>
+      <tile coll="false"/>
+      <tile residx="7" coll="true"/>
+    </tiles>
+    <layers>
+      <layer id="bg" >
+        <row>0101</row>
+      </layer>
+    </layers>
+  </map>
+
+  <map id="m1" tilepath="map" >
+    <tiles>
+      <tile coll="false"/>
+      <!--wall-->
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+      <tile residx="7" coll="true"/>
+    </tiles>
+    <layers>
+      <layer id="bg" >
+        <row>07070707070707070707070707120707070707070707</row>
+        <row>04090909090609090908090809090906090909090905</row>
+        <row>01010101010101010101010101010101010101010101</row>
+        <row>01010101010101010101010101010101010101010101</row>
+        <row>01010101010101010101010101010101010101010101</row>
+        <row>01010101010101010101010101010101010101010101</row>
+        <row>01010101010101010101010101010101010101010101</row>
+        <row>01010101010101011601010101010101010101010101</row>
+        <row>01010101010101010101010101010101010101010101</row>
+        <row>01010101010101010101010101010101010101010101</row>
+        <row>01010101010101010101010101010101010101010101</row>
+        <row>19191919191901010101010101010101010101010101</row>
+        <row>01010101010101010101010101010101010101010101</row>
+        <row>01010101010101010101010101010101010101010101</row>
+        <row>01010101010101010101010101010101010101010101</row>
+        <row>01010101010101010101010101010101010101010101</row>
+        <row>01011901010101010101010101010101010101010101</row>
+        <row>01010101010101010101010101010101010101010101</row>
+        <row>01190101010101010101010101010101010101010101</row>
+        <row>01010101010101010101010101010101010101010101</row>
+      </layer>
+      <layer id="l1">
+        <row>-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1-1</row>
+      </layer>
+    </layers>
+  </map>
+
+</maps>
